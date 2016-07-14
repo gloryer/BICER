@@ -272,14 +272,18 @@ public class BICCollector {
 			ArrayList<Integer> lstIdxOfDeletedLines) {
 		ArrayList<Integer> lineIndices = new ArrayList<Integer>();
 		
-		EditList editList = Utils.getEditListFromDiff(origPrvFileSource, prevFileSource);
-
+		// TODO applied remove"One"LineComment becuase current removeLineComment cannot deal with this example correectly: a("sdfa//"); 
+		// So as a workaround remove"One"lineComment is used to make the original line as the line in line without // comment.
+		EditList editList = Utils.getEditListFromDiff(Utils.removeOneLineComment(origPrvFileSource), prevFileSource); 
+		
 		for(Integer idxOfDeletedLine:lstIdxOfDeletedLines){
 			
 			String[] arrOrigPrvFileSource = origPrvFileSource.split("\n");
 			String[] arrPrevFileSource = prevFileSource.split("\n");
 			
-			if(arrPrevFileSource[idxOfDeletedLine].trim().equals(""))
+			
+			// split("\n") removes last empty lines. In this case, OOIBE can happen. Also ignore empty line
+			if(arrPrevFileSource.length<=idxOfDeletedLine || arrPrevFileSource[idxOfDeletedLine].trim().equals("")) 
 				continue;
 			
 			Edit prevEdit = null;
@@ -315,7 +319,7 @@ public class BICCollector {
 					origIdxOfDeletedLine = idxOfDeletedLine;
 				}
 				lineIndices.add(origIdxOfDeletedLine);
-				if(!Utils.removeLineComments(arrOrigPrvFileSource[origIdxOfDeletedLine]).trim().equals(arrPrevFileSource[idxOfDeletedLine].trim())){
+				if(Utils.removeLineComments(arrOrigPrvFileSource[origIdxOfDeletedLine]).trim().indexOf(arrPrevFileSource[idxOfDeletedLine].trim())!=0){
 					System.err.println("Error: line contents are not same in original file source and the file source w/o comments.");
 					System.exit(0);
 				}
@@ -343,6 +347,8 @@ public class BICCollector {
 		df.setDetectRenames(true);
 		
 		// Traverse all commits to collect deleted lines.
+		//int i=0;
+		//System.out.println(commits.size());
 		for(RevCommit rev:commits){
 
 			// Get basic commit info
@@ -355,7 +361,7 @@ public class BICCollector {
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
-
+			//System.out.println(i++);
 			// Get diffs from affected files in the commit
 			RevCommit preRev = rev.getParent(0);
 			List<DiffEntry> diffs;
@@ -368,7 +374,7 @@ public class BICCollector {
 
 					// Skip test case files
 					if(newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
-
+					
 					// Do diff on files without comments to only consider code lines
 					String prevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
 					String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1, newPath));	

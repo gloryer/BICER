@@ -323,6 +323,7 @@ public class Utils {
 		return false;
 	}
 	
+	// TODO need to be updated using ASTParser? RegExp requires huge stack size in some files.
 	public static String removeLineComments(String line) {
 		// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
 		// (/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/|[ \t]*//.*)
@@ -330,8 +331,23 @@ public class Utils {
 		//newLine = newLine.replaceAll("([ \\t]*//.*)", "");
 		//String newLine = line.replaceAll("/\\*.*\\*/", "");
 		//newLine = newLine.replaceAll("//.*(?=\\n)", "");
-		return line.replaceAll("\\/\\*([\\S\\s]+?)\\*\\/","").replaceAll("([ \\t]*//.*)","");
+		//return line.replaceAll("\\/\\*([\\S\\s]+?)\\*\\/","").replaceAll("([ \\t]*//.*)","");
+		//return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/)","").replaceAll("([ \\t]*//.*)","");
+		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
 	}
+	
+	// TODO need to be updated using ASTParser? RegExp requires huge stack size in some files.
+		public static String removeOneLineComment(String line) {
+			// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
+			// (/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/|[ \t]*//.*)
+			//String newLine = line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/)", "");
+			//newLine = newLine.replaceAll("([ \\t]*//.*)", "");
+			//String newLine = line.replaceAll("/\\*.*\\*/", "");
+			//newLine = newLine.replaceAll("//.*(?=\\n)", "");
+			//return line.replaceAll("\\/\\*([\\S\\s]+?)\\*\\/","").replaceAll("([ \\t]*//.*)","");
+			//return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/)","").replaceAll("([ \\t]*//.*)","");
+			return line.replaceAll("[ \\t]*//.*", "");
+		}
 	
 	public static String getStringDateTimeFromCommitTime(int commitTime){
 		SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
