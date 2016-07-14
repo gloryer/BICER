@@ -13,7 +13,7 @@ public class BIChange implements Comparable<BIChange>{
 	int lineNum; // line num in BI file
 	int lineNumInPrevFixRev; // line num in previous commit of the fix commit
 	boolean isAddedLine;
-	String line;
+	String line="";
 	boolean isNoise;
 	Edit edit;
 	EditList editList;
@@ -55,7 +55,11 @@ public class BIChange implements Comparable<BIChange>{
 			if(!forSenitizer){
 				lineNumInPrevFixRev = Integer.parseInt(splitString[7]); // lineNum in the prv. of fix revision.
 				isAddedLine = splitString[8].equals("t")||splitString[8].equals("true")?true:false;
-				line = splitString[9];
+				
+				// if raw line data contains tab, the line data is splitted. In this case, replace tab with 5 white spaces
+				for(int i=9;i<splitString.length;i++)
+					line += splitString[i] + "     ";
+				line = line.trim();
 			}else{
 				lineNumInPrevFixRev = Integer.parseInt(splitString[6]); // lineNum in the prv. of fix revision.
 				isAddedLine = splitString[7].equals("t")||splitString[7].equals("true")?true:false;
