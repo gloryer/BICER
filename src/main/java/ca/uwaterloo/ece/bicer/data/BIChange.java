@@ -215,7 +215,7 @@ public class BIChange implements Comparable<BIChange>{
 	@Override
 	public int compareTo(BIChange o) {
 		
-		// order by BIDate, path, lineNum FixDate, 
+		// order by BIDate, path, FixDate, lineNum 
 		if(BIDate.compareTo(o.BIDate)<0)
 			return -1;
 		else if(BIDate.compareTo(o.BIDate)>0)
@@ -226,15 +226,15 @@ public class BIChange implements Comparable<BIChange>{
 			else if(path.compareTo(o.path)>0)
 				return 1;
 			else{
-				if(lineNum<o.lineNum)
+				if(FixDate.compareTo(o.FixDate)<0)
 					return -1;
-				else if(lineNum>o.lineNum)
+				else if(FixDate.compareTo(o.FixDate)>0)
 					return 1;
 				else{
-					if(FixDate.compareTo(o.FixDate)<0)
+					if(lineNum<o.lineNum)
 						return -1;
-					else if(FixDate.compareTo(o.FixDate)>0)
-						return 1;
+					else if(lineNum>o.lineNum)
+						return 1;	
 				}
 			}
 		}
