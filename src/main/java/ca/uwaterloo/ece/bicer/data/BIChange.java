@@ -3,7 +3,7 @@ package ca.uwaterloo.ece.bicer.data;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
 
-public class BIChange {
+public class BIChange implements Comparable<BIChange>{
 	String BISha1;
 	String biPath;
 	String path;
@@ -206,5 +206,35 @@ public class BIChange {
 			return false;
 		
 		return true;
+	}
+
+	@Override
+	public int compareTo(BIChange o) {
+		
+		// order by BIDate, path, lineNum FixDate, 
+		if(BIDate.compareTo(o.BIDate)<0)
+			return -1;
+		else if(BIDate.compareTo(o.BIDate)>0)
+			return 1;
+		else{
+			if(path.compareTo(o.path)<0)
+				return -1;
+			else if(path.compareTo(o.path)>0)
+				return 1;
+			else{
+				if(lineNum<o.lineNum)
+					return -1;
+				else if(lineNum>o.lineNum)
+					return 1;
+				else{
+					if(FixDate.compareTo(o.FixDate)<0)
+						return -1;
+					else if(FixDate.compareTo(o.FixDate)>0)
+						return 1;
+				}
+			}
+		}
+		
+		return 0;
 	}
 }

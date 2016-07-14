@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -163,6 +164,7 @@ public class BICCollector {
 					}
 				}
 			}
+			Collections.sort(lstBIChanges);
 			System.out.println("BISha1\toldPath\tPath\tFixSha1\tBIDate\tFixDate\tLineNumInBI\tLineNumInPreFix\tisAddedLine\tLine");
 			for(BIChange biChange:lstBIChanges){
 				System.out.println(biChange.getBISha1() + "\t" +
