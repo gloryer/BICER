@@ -46,6 +46,9 @@ public class BICCollector {
 	private String pathToBuggyIDs;
 	private boolean help;
 	//private boolean verbose;
+	private String strStartDate;
+	private String strEndDate;
+	private String strLabelEndDate;
 	private Date startDate;
 	private Date endDate;
 	private Date labelEndDate;
@@ -112,8 +115,8 @@ public class BICCollector {
 								String oldPath = diff.getOldPath();
 								String newPath = diff.getNewPath();
 
-								// ignore Test files and non-java files.
-								if(newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
+								// ignore when no previous revision of a file, Test files, and non-java files.
+								if(oldPath.equals("/dev/null") || newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
 
 								String id =  rev.name() + "";
 
@@ -246,6 +249,8 @@ public class BICCollector {
 				//String path;
 				String FixSha1 = fixSha1;
 				String BIDate = Utils.getStringDateTimeFromCommitTime(commit.getCommitTime());
+				if(!(strStartDate.compareTo(BIDate)<=0 && BIDate.compareTo(strEndDate)<=0)) // only consider BISha1 whose date is bewteen startDate and endDate
+					continue;
 				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
 				int lineNum = blame.getSourceLine(lineIndex)+1;
 				int lineNumInPrevFixRev = lineIndex+1;
@@ -283,11 +288,32 @@ public class BICCollector {
 					continue;
 				}
 				
-				int endA = prevEdit.getEndA();
-				int endB = prevEdit.getEndB();
-				int gap = idxOfDeletedLine - endB;
-				lineIndices.add(endA + gap);
-				if(!Utils.removeLineComments(arrOrigPrvFileSource[endA + gap].trim()).equals(arrPrevFileSource[idxOfDeletedLine].trim())){
+				int origIdxOfDeletedLine = -1;
+				
+				if(prevEdit!=null){
+					int endA = prevEdit.getEndA();
+					int endB = prevEdit.getEndB();
+					if(edit.getBeginB()<=idxOfDeletedLine && idxOfDeletedLine <=edit.getEndB()){ // idxOfDeletedLine can be in a hunk. Then, need a special treatment
+						if(prevEdit.getType().equals(Edit.Type.DELETE)){
+							if(edit.getEndA()-edit.getBeginA() < edit.getEndB() - edit.getBeginB())
+								origIdxOfDeletedLine = prevEdit.getBeginA() + 1;
+							else
+								origIdxOfDeletedLine = prevEdit.getEndA() - 1;
+						} else {
+							if(edit.getEndA()-edit.getBeginA() < edit.getEndB() - edit.getBeginB())
+								origIdxOfDeletedLine = edit.getEndA() - (edit.getEndB() - idxOfDeletedLine);
+							else
+								origIdxOfDeletedLine = edit.getBeginA() + (idxOfDeletedLine - edit.getBeginB());
+						}
+					}else{
+						int gap = idxOfDeletedLine - endB;
+						origIdxOfDeletedLine = endA + gap;
+					}
+				}else{ // if prevEdit is null, there are no comment lines in the original file before idxOfDeletedLine. Thus, original index will be the same as idxOfDeletedLine
+					origIdxOfDeletedLine = idxOfDeletedLine;
+				}
+				lineIndices.add(origIdxOfDeletedLine);
+				if(!Utils.removeLineComments(arrOrigPrvFileSource[origIdxOfDeletedLine]).trim().equals(arrPrevFileSource[idxOfDeletedLine].trim())){
 					System.err.println("Error: line contents are not same in original file source and the file source w/o comments.");
 					System.exit(0);
 				}
@@ -315,8 +341,6 @@ public class BICCollector {
 		df.setDetectRenames(true);
 		
 		// Traverse all commits to collect deleted lines.
-		System.out.println("Number of commits: " + commits.size());
-		int i=0;
 		for(RevCommit rev:commits){
 
 			// Get basic commit info
@@ -329,9 +353,7 @@ public class BICCollector {
 			} catch (ParseException e1) {
 				e1.printStackTrace();
 			}
-			
-			System.out.println(i++);
-			
+
 			// Get diffs from affected files in the commit
 			RevCommit preRev = rev.getParent(0);
 			List<DiffEntry> diffs;
@@ -349,7 +371,7 @@ public class BICCollector {
 					String prevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
 					String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1, newPath));	
 					EditList editList = Utils.getEditListFromDiff(prevfileSource, fileSource);
-					String[] arrPrevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath)).split("\n");
+					String[] arrPrevfileSource=prevfileSource.split("\n");
 					for(Edit edit:editList){
 						// Deleted lines are in DELETE and REPLACE types. So, ignore INSERT type.
 						if(!edit.getType().equals(Edit.Type.INSERT)){
@@ -474,9 +496,12 @@ public class BICCollector {
 			help = cmd.hasOption("h");
 			//verbose = cmd.hasOption("v");
 
-			startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cmd.getOptionValue("s"));
-			endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cmd.getOptionValue("e"));
-			labelEndDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(cmd.getOptionValue("l"));
+			strStartDate = cmd.getOptionValue("s");
+			startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(strStartDate);
+			strEndDate = cmd.getOptionValue("e");
+			endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(strEndDate);
+			strLabelEndDate = cmd.getOptionValue("l");
+			labelEndDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(strLabelEndDate);
 
 		} catch (Exception e) {
 			printHelp(options);

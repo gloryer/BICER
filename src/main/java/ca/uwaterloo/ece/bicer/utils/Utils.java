@@ -326,7 +326,11 @@ public class Utils {
 	public static String removeLineComments(String line) {
 		// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
 		// (/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/|[ \t]*//.*)
-		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
+		//String newLine = line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/)", "");
+		//newLine = newLine.replaceAll("([ \\t]*//.*)", "");
+		//String newLine = line.replaceAll("/\\*.*\\*/", "");
+		//newLine = newLine.replaceAll("//.*(?=\\n)", "");
+		return line.replaceAll("\\/\\*([\\S\\s]+?)\\*\\/","").replaceAll("([ \\t]*//.*)","");
 	}
 	
 	public static String getStringDateTimeFromCommitTime(int commitTime){
