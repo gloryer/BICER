@@ -21,14 +21,14 @@ public class GenericTypeChange implements Filter {
 	public boolean filterOut() {
 		if(!biChange.getIsAddedLine()) return false;
 		String stmt= biChange.getLine();
-		String initStmt=Utils.removeLineComments(stmt).trim();;
+		String initStmt=stmt.trim();
 		Edit edit=biChange.getEdit();
 		if(edit!=null){ 
 			if(stmt.matches(".*<.*>.*")){
 				stmt=stmt.replaceAll("<.*>", "");
-				stmt=Utils.removeLineComments(stmt).trim();
+				stmt=stmt.trim();
 				for(int i=edit.getBeginB();i<edit.getEndB();i++){
-					String fixStmt=Utils.removeLineComments(wholeFixCode[i]).trim();
+					String fixStmt=wholeFixCode[i].trim();
 					if(!fixStmt.matches(".*<.*>.*")&&fixStmt.equals(stmt)) return true;
 				}			
 			}else{
@@ -36,7 +36,7 @@ public class GenericTypeChange implements Filter {
 					String fixStmt=wholeFixCode[i];
 					if(fixStmt.matches(".*<.*>.*")){
 						fixStmt=fixStmt.replaceAll("<.*>", "");
-						fixStmt=Utils.removeLineComments(fixStmt).trim();
+						fixStmt=fixStmt.trim();
 						if(fixStmt.equals(initStmt)) return true;					
 					}
 				}				

@@ -122,8 +122,8 @@ public class BICCollector {
 								String id =  rev.name() + "";
 
 								// get preFixSource and fixSource without comments
-								String prevFileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id +  "~1", oldPath));
-								String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id, newPath));
+								String prevFileSource=Utils.removeComments(Utils.fetchBlob(repo, id +  "~1", oldPath));
+								String fileSource=Utils.removeComments(Utils.fetchBlob(repo, id, newPath));
 								
 								EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
 
@@ -310,8 +310,8 @@ public class BICCollector {
 					if(newPath.indexOf("Test")>=0 || newPath.indexOf("/test")>=0 || !newPath.endsWith(".java")) continue;
 					
 					// Do diff on files without comments to only consider code lines
-					String prevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
-					String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1, newPath));	
+					String prevfileSource=Utils.removeComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
+					String fileSource=Utils.removeComments(Utils.fetchBlob(repo, sha1, newPath));	
 					
 					EditList editList = Utils.getEditListFromDiff(prevfileSource, fileSource);
 					

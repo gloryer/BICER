@@ -105,11 +105,11 @@ public class NoiseFilterRunner {
 			
 			// load whole fix code
 			try {
-				String code = Utils.fetchBlob(repo, preFixSha1, fixPath);
+				String code = Utils.removeComments(Utils.fetchBlob(repo, preFixSha1, fixPath));
 				if(code.equals("")){
 					System.err.println("WARNING pre fix revision path does not exist: " + fixSha1 + ":" + fixPath);
 					System.err.println("Try to get code from biPath " + biPath);
-					code = Utils.fetchBlob(repo, biChange.getBISha1(), biPath);
+					code = Utils.removeComments(Utils.fetchBlob(repo, biChange.getBISha1(), biPath));
 					if(code.equals("")){
 						System.err.println("WARNING even bi path does not exist: " + biPath);
 						System.exit(0);
@@ -118,7 +118,7 @@ public class NoiseFilterRunner {
 				
 				wholePreFixCode = code.split("\n");
 				
-				wholeFixCode = Utils.fetchBlob(repo, fixSha1, fixPath).split("\n");
+				wholeFixCode = Utils.removeComments(Utils.fetchBlob(repo, fixSha1, fixPath)).split("\n");
 
 				editListFromDiff = Utils.getEditListFromDiff(Utils.getStringFromStringArray(wholePreFixCode),Utils.getStringFromStringArray(wholeFixCode));
 				//editListFromDiff = Utils.getEditListFromDiff(git, preFixSha1, fixSha1, fixPath);//Utils.getEditListFromDiff(Utils.getStringFromStringArray(wholePreFixCode),Utils.getStringFromStringArray(wholeFixCode));

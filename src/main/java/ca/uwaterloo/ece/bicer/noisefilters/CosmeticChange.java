@@ -29,7 +29,7 @@ public class CosmeticChange implements Filter {
 		//if(!biChange.getIsAddedLine())
 		//	return false;
 		
-		String stmt = Utils.removeLineComments(biChange.getLine());
+		String stmt = biChange.getLine();
 		
 		if(doesAFixCosmeticChange(stmt,wholeFixCode))
 			return true;
@@ -68,13 +68,13 @@ public class CosmeticChange implements Filter {
 		for(int i=startLineInPreFixCode;i<endLineInPreFixCode;i++){
 			deletedLines += wholePreFixCode[i] + "\n";
 		}
-		deletedLines = Utils.removeLineComments(deletedLines);
+		deletedLines = deletedLines;
 		// get addedLines
 		String addedLines = "";
 		for(int i=startLineInFixCode;i<endLineInFixCode;i++){
 			addedLines += wholeFixCode[i]  + "\n";
 		}
-		addedLines = Utils.removeLineComments(addedLines);
+		addedLines = addedLines;
 		
 		if(addedLines.replaceAll("\\s", "").equals(deletedLines.replaceAll("\\s", "")))
 			return true;
@@ -120,7 +120,7 @@ public class CosmeticChange implements Filter {
 
 		
 		for(int i=startLineInFixCode; i<endLineInFixCode;i++){
-			affectedFixCode += Utils.removeLineComments(fixCode[i]).replaceAll("\\s", "");
+			affectedFixCode += fixCode[i].replaceAll("\\s", "");
 			// if a change happens in the front, do not filter. That can be adding a modifier or similar changes.
 			// B ==> A B
 			int indexOf = fixCode[i].trim().indexOf(biChange.getLine().trim());
@@ -133,7 +133,7 @@ public class CosmeticChange implements Filter {
 			String mergeFirstAndSecondFixLine="";
 			String biLineWithoutSpace = biChange.getLine().replaceAll("\\s", "");
 			if(i+1<endLineInFixCode)
-				mergeFirstAndSecondFixLine = Utils.removeLineComments((fixCode[i] + fixCode[i+1]).replaceAll("\\s", ""));
+				mergeFirstAndSecondFixLine = (fixCode[i] + fixCode[i+1]).replaceAll("\\s", "");
 			indexOf = mergeFirstAndSecondFixLine.indexOf(biLineWithoutSpace);
 			if(indexOf>0)
 				return false;

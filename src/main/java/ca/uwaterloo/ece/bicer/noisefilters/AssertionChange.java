@@ -21,7 +21,7 @@ public class AssertionChange implements Filter{
 	public boolean filterOut() {
 		if(biChange.getLine().matches("^\\s*assert\\s.*")) return true;
 		Edit edit=biChange.getEdit();
-		String stmt=Utils.removeLineComments(biChange.getLine()).trim();
+		String stmt=biChange.getLine().trim();
 		stmt=stmt.replaceAll(";$", "");
 		if(edit!=null){
 			for(int i=edit.getBeginB();i<edit.getEndB();i++){

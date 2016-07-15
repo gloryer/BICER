@@ -139,8 +139,8 @@ public class ReBuildDefUseChain implements Filter{
 								if(decLine==decLastLine){
 									for(int countOfFixInit=0;countOfFixInit<4;countOfFixInit++){
 										boolean flag=true;
-										stmt=Utils.removeLineComments(initStmt).replaceAll("\\s", "");
-										if(fixInits[countOfFixInit]!=null&&stmt.equals(Utils.removeLineComments(fixInits[countOfFixInit]).replaceAll("\\s", ""))){
+										stmt=initStmt.replaceAll("\\s", "");
+										if(fixInits[countOfFixInit]!=null&&stmt.equals(fixInits[countOfFixInit].replaceAll("\\s", ""))){
 											// check the using of this new defined variable in this method
 											for(int j=decLine;j<endLine;j++){
 												///if(wholeFixCode[j].indexOf(varName)!=-1){
@@ -158,10 +158,10 @@ public class ReBuildDefUseChain implements Filter{
 									for(int countOfFixInit=0;countOfFixInit<4;countOfFixInit++){
 										if(fixInits[countOfFixInit]!=null){
 											String biStmt="";
-											String cleanedFixedStmt=Utils.removeLineComments(fixInits[countOfFixInit]).replaceAll("\\s", "");
+											String cleanedFixedStmt=fixInits[countOfFixInit].replaceAll("\\s", "");
 											for(int j=biChange.getLineNum()-1;j<wholeBiCode.length;j++){
 												biStmt=biStmt+wholeBiCode[j];
-												String cleanedStmt=Utils.removeLineComments(biStmt).replaceAll("\\s", "");
+												String cleanedStmt=biStmt.replaceAll("\\s", "");
 												if(cleanedStmt.matches(".*;$")){
 													if(cleanedFixedStmt.indexOf(cleanedStmt.replaceAll(";$",""))!=-1){
 
@@ -222,8 +222,8 @@ public class ReBuildDefUseChain implements Filter{
 										if(fixInits[countOfFixInit]!=null&&stmt.indexOf(fixInits[countOfFixInit])!=-1){
 											String fixedStmt=wholeFixCode[i];
 											fixedStmt=fixedStmt.replaceAll(varName, fixInits[countOfFixInit]);
-											fixedStmt=Utils.removeLineComments(fixedStmt).trim();
-											stmt=Utils.removeLineComments(stmt).trim();
+											fixedStmt=fixedStmt.trim();
+											stmt=stmt.trim();
 											stmt=stmt.replaceAll("\\s", "");
 											fixedStmt=fixedStmt.replaceAll("\\s", "");
 
@@ -331,8 +331,8 @@ public class ReBuildDefUseChain implements Filter{
 												if(fixInits[countOfFixInit]!=null&&stmt.indexOf(fixInits[countOfFixInit])!=-1){
 													String fixedStmt=wholeFixCode[i];
 													fixedStmt=fixedStmt.replaceAll(varName, fixInits[countOfFixInit]);
-													fixedStmt=Utils.removeLineComments(fixedStmt).trim();
-													stmt=Utils.removeLineComments(stmt).trim();
+													fixedStmt=fixedStmt.trim();
+													stmt=stmt.trim();
 													stmt=stmt.replaceAll("\\s", "");
 													fixedStmt=fixedStmt.replaceAll("\\s", "");
 													if(fixedStmt.equals(stmt)){

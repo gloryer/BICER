@@ -116,17 +116,17 @@ public class RemoveDefUseChain implements Filter{
 												for(int j=ed.getBeginB();j<ed.getEndB();j++){
 													String fixedStmt=wholeFixCode[j];
 													if(fixedStmt.indexOf(initializer)!=-1){ // fixedStmt contain initializer
-														fixedStmt=Utils.removeLineComments(fixedStmt).trim();
+														fixedStmt=fixedStmt.trim();
 														fixedStmt=fixedStmt.replaceAll("\\s", "");	
 														stmt=stmt.replaceAll(vdfName, initializer);
-														stmt=Utils.removeLineComments(stmt).trim();
+														stmt=stmt.trim();
 														stmt=stmt.replaceAll("\\s", "");
 														if(stmt.equals(fixedStmt)) return true;
 													}else if(initializer2!=null&&fixedStmt.indexOf(initializer2)!=-1){//????????add dealing with force casting?????????
-														fixedStmt=Utils.removeLineComments(fixedStmt).trim();
+														fixedStmt=fixedStmt.trim();
 														fixedStmt=fixedStmt.replaceAll("\\s", "");	
 														stmt=stmt.replaceAll(vdfName, initializer2);
-														stmt=Utils.removeLineComments(stmt).trim();
+														stmt=stmt.trim();
 														stmt=stmt.replaceAll("\\s", "");
 														if(stmt.equals(fixedStmt)) return true;											
 													}
@@ -154,17 +154,17 @@ public class RemoveDefUseChain implements Filter{
 									for(int i=edit.getBeginB();i<edit.getEndB();i++){
 										String fixedStmt=wholeFixCode[i];
 										if(fixedStmt.indexOf(initializer)!=-1){ // fixedStmt contain initializer
-											fixedStmt=Utils.removeLineComments(fixedStmt).trim();
+											fixedStmt=fixedStmt.trim();
 											fixedStmt=fixedStmt.replaceAll("\\s", "");	
 											stmt=stmt.replaceAll(vdfName, initializer);
-											stmt=Utils.removeLineComments(stmt).trim();
+											stmt=stmt.trim();
 											stmt=stmt.replaceAll("\\s", "");
 											if(stmt.equals(fixedStmt)) return true;
 										}else if(initializer2!=null&&fixedStmt.indexOf(initializer2)!=-1){//????????add dealing with force casting?????????
-											fixedStmt=Utils.removeLineComments(fixedStmt).trim();
+											fixedStmt=fixedStmt.trim();
 											fixedStmt=fixedStmt.replaceAll("\\s", "");	
 											stmt=stmt.replaceAll(vdfName, initializer2);
-											stmt=Utils.removeLineComments(stmt).trim();
+											stmt=stmt.trim();
 											stmt=stmt.replaceAll("\\s", "");
 											if(stmt.equals(fixedStmt)) return true;											
 										}
