@@ -121,15 +121,9 @@ public class BICCollector {
 
 								String id =  rev.name() + "";
 
-								String origPrvFileSource = Utils.fetchBlob(repo, id +  "~1", oldPath);
-								String origFileSource = Utils.fetchBlob(repo, id, newPath);
-
-								String prevFileSource=Utils.removeLineComments(origPrvFileSource);
-								String fileSource=Utils.removeLineComments(origFileSource);
-
-								//String[] arrPrevFileSource = prevFileSource.split("\n");
-								//String[] arrFileSource = fileSource.split("\n");
-
+								// get preFixSource and fixSource without comments
+								String prevFileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id +  "~1", oldPath));
+								String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id, newPath));
 
 								EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
 
@@ -154,8 +148,8 @@ public class BICCollector {
 								}
 
 								// get BI commit from lines in lstIdxOfOnlyInsteredLines
-								lstBIChanges.addAll(getBIChangesFromBILineIndices(id,rev.getCommitTime(), newPath, oldPath, origPrvFileSource,prevFileSource,lstIdxOfDeletedLines));
-								lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,origFileSource,fileSource,lstIdxOfOnlyInsteredLines,oldPath,newPath));
+								lstBIChanges.addAll(getBIChangesFromBILineIndices(id,rev.getCommitTime(), newPath, oldPath, prevFileSource,lstIdxOfDeletedLines));
+								lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,fileSource,lstIdxOfOnlyInsteredLines,oldPath,newPath));
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -183,14 +177,14 @@ public class BICCollector {
 	}
 
 	private ArrayList<BIChange> getBIChangesFromDeletedBILine(String fixSha1, int fixCommitTime,
-			HashMap<String, ArrayList<DeletedLineInCommits>> mapDeletedLines, String origFileSource, String fileSource,
+			HashMap<String, ArrayList<DeletedLineInCommits>> mapDeletedLines, String fileSource,
 			ArrayList<Integer> lstIdxOfOnlyInsteredLines, String oldPath, String path) {
 		
 		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
 		
-		ArrayList<Integer> arrIndicesInOriginalFileSource = getOriginalLineIndices(origFileSource,fileSource,lstIdxOfOnlyInsteredLines);
+		ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfOnlyInsteredLines;// getOriginalLineIndices(origFileSource,fileSource,lstIdxOfOnlyInsteredLines);
 		
-		String[] arrOrigFileSource = origFileSource.split("\n");
+		String[] arrOrigFileSource = fileSource.split("\n");
 		for(int lineIdx:arrIndicesInOriginalFileSource){
 			String line = arrOrigFileSource[lineIdx].trim();
 			ArrayList<DeletedLineInCommits> lstDeletedLines = mapDeletedLines.get(line);
@@ -225,7 +219,7 @@ public class BICCollector {
 		return biChanges;
 	}
 
-	private ArrayList<BIChange> getBIChangesFromBILineIndices(String fixSha1,int fixCommitTime, String path, String prevPath, String origPrvFileSource,
+	private ArrayList<BIChange> getBIChangesFromBILineIndices(String fixSha1,int fixCommitTime, String path, String prevPath,
 			String prevFileSource, ArrayList<Integer> lstIdxOfDeletedLines) {
 
 		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
@@ -239,13 +233,10 @@ public class BICCollector {
 			blamer.setFilePath(prevPath);
 			BlameResult blame = blamer.setTextComparator(RawTextComparator.WS_IGNORE_ALL).setFollowFileRenames(true).call();
 
-			ArrayList<Integer> arrIndicesInOriginalFileSource = getOriginalLineIndices(origPrvFileSource,prevFileSource,lstIdxOfDeletedLines);
+			ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfDeletedLines; //getOriginalLineIndices(origPrvFileSource,prevFileSource,lstIdxOfDeletedLines);
 			for(int lineIndex:arrIndicesInOriginalFileSource){
 				RevCommit commit = blame.getSourceCommit(lineIndex);
-				String line = origPrvFileSource.split("\n")[lineIndex].trim();
-				if(line.length()<2) // heuristic: ignore "}"
-					continue;
-				
+
 				String BISha1 = commit.name();
 				String biPath = blame.getSourcePath(lineIndex);
 				//String path;
@@ -257,7 +248,7 @@ public class BICCollector {
 				int lineNum = blame.getSourceLine(lineIndex)+1;
 				int lineNumInPrevFixRev = lineIndex+1;
 				
-				BIChange biChange = new BIChange(BISha1,biPath,FixSha1,path,BIDate,FixDate,lineNum,lineNumInPrevFixRev, origPrvFileSource.split("\n")[lineIndex].trim(),true);
+				BIChange biChange = new BIChange(BISha1,biPath,FixSha1,path,BIDate,FixDate,lineNum,lineNumInPrevFixRev, prevFileSource.split("\n")[lineIndex].trim(),true);
 				biChanges.add(biChange);
 			}
 
@@ -266,69 +257,6 @@ public class BICCollector {
 		}
 
 		return biChanges;
-	}
-
-	private ArrayList<Integer> getOriginalLineIndices(String origPrvFileSource, String prevFileSource,
-			ArrayList<Integer> lstIdxOfDeletedLines) {
-		ArrayList<Integer> lineIndices = new ArrayList<Integer>();
-		
-		// TODO applied remove"One"LineComment becuase current removeLineComment cannot deal with this example correectly: a("sdfa//"); 
-		// So as a workaround remove"One"lineComment is used to make the original line as the line in line without // comment.
-		EditList editList = Utils.getEditListFromDiff(Utils.removeOneLineComment(origPrvFileSource), prevFileSource); 
-		
-		for(Integer idxOfDeletedLine:lstIdxOfDeletedLines){
-			
-			String[] arrOrigPrvFileSource = origPrvFileSource.split("\n");
-			String[] arrPrevFileSource = prevFileSource.split("\n");
-			
-			
-			// split("\n") removes last empty lines. In this case, OOIBE can happen. Also ignore empty line
-			if(arrPrevFileSource.length<=idxOfDeletedLine || arrPrevFileSource[idxOfDeletedLine].trim().equals("")) 
-				continue;
-			
-			Edit prevEdit = null;
-			for(Edit edit:editList){
-				
-				if(edit.getEndB() <= idxOfDeletedLine){
-					prevEdit = edit;
-					continue;
-				}
-				
-				int origIdxOfDeletedLine = -1;
-				
-				if(prevEdit!=null){
-					int endA = prevEdit.getEndA();
-					int endB = prevEdit.getEndB();
-					if(edit.getBeginB()<=idxOfDeletedLine && idxOfDeletedLine <=edit.getEndB()){ // idxOfDeletedLine can be in a hunk. Then, need a special treatment
-						if(prevEdit.getType().equals(Edit.Type.DELETE)){
-							if(edit.getEndA()-edit.getBeginA() < edit.getEndB() - edit.getBeginB())
-								origIdxOfDeletedLine = prevEdit.getBeginA() + 1;
-							else
-								origIdxOfDeletedLine = prevEdit.getEndA() - 1;
-						} else {
-							if(edit.getEndA()-edit.getBeginA() < edit.getEndB() - edit.getBeginB())
-								origIdxOfDeletedLine = edit.getEndA() - (edit.getEndB() - idxOfDeletedLine);
-							else
-								origIdxOfDeletedLine = edit.getBeginA() + (idxOfDeletedLine - edit.getBeginB());
-						}
-					}else{
-						int gap = idxOfDeletedLine - endB;
-						origIdxOfDeletedLine = endA + gap;
-					}
-				}else{ // if prevEdit is null, there are no comment lines in the original file before idxOfDeletedLine. Thus, original index will be the same as idxOfDeletedLine
-					origIdxOfDeletedLine = idxOfDeletedLine;
-				}
-				lineIndices.add(origIdxOfDeletedLine);
-				if(Utils.removeLineComments(arrOrigPrvFileSource[origIdxOfDeletedLine]).trim().indexOf(arrPrevFileSource[idxOfDeletedLine].trim())!=0){
-					System.err.println("Error: line contents are not same in original file source and the file source w/o comments.");
-					System.exit(0);
-				}
-				
-				break;
-			}
-		}
-		
-		return lineIndices;
 	}
 
 	/**
