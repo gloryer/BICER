@@ -68,8 +68,8 @@ public class Utils {
 		return lines;
 	}
 
-	static DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
-	static RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
+	static public DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
+	static public RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
 	static public EditList getEditListFromDiff(String file1, String file2) {
 		RawText rt1 = new RawText(file1.getBytes());
 		RawText rt2 = new RawText(file2.getBytes());
