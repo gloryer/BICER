@@ -26,6 +26,7 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -124,7 +125,7 @@ public class BICCollector {
 								// get preFixSource and fixSource without comments
 								String prevFileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id +  "~1", oldPath));
 								String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, id, newPath));
-
+								
 								EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
 
 								// get line indices that are related to BI lines.
@@ -271,7 +272,7 @@ public class BICCollector {
 
 		DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 		df.setRepository(repo);
-		df.setDiffComparator(RawTextComparator.DEFAULT);
+		df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
 		df.setDetectRenames(true);
 		
 		// Traverse all commits to collect deleted lines.
@@ -296,9 +297,17 @@ public class BICCollector {
 			try {
 				// Deal with diff and get only deleted lines
 				diffs = df.scan(preRev.getTree(), rev.getTree());
+				
 				for (DiffEntry diff : diffs) {
+					
 					String oldPath = diff.getOldPath();
 					String newPath = diff.getNewPath();
+					
+					if(newPath.equals("solr/src/java/org/apache/solr/search/SolrQueryParser.java") && rev.name().equals("d907bd165ed884b90f54969ffa5e6e28bd31c3ef"))
+					try (DiffFormatter formatter = new DiffFormatter(System.out)) {
+                        formatter.setRepository(repo);
+                        formatter.format(diff);
+                    }
 
 					// Skip test case files
 					if(newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
@@ -306,7 +315,15 @@ public class BICCollector {
 					// Do diff on files without comments to only consider code lines
 					String prevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
 					String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1, newPath));	
+					
+					String[] arrPrevFileSource = prevfileSource.split("\n");
+					String[] arrFileSource = fileSource.split("\n");
+
+					
 					EditList editList = Utils.getEditListFromDiff(prevfileSource, fileSource);
+					
+					new DiffFormatter(System.out).format(editList, new RawText(prevfileSource.getBytes()), new RawText(fileSource.getBytes()));
+					
 					String[] arrPrevfileSource=prevfileSource.split("\n");
 					for(Edit edit:editList){
 						// Deleted lines are in DELETE and REPLACE types. So, ignore INSERT type.

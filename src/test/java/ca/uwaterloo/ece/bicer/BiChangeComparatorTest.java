@@ -20,7 +20,7 @@ public class BiChangeComparatorTest {
     @Test public void testSomeLibraryMethod() {
     	
     	String project ="lucene";
-    	String dir = System.getProperty("user.home") + "/Documents/ODP/projects/" + project +"/";
+    	String dir = System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project +"/";
         
     	String pathForBIChangesBICER = dir + "biChangesBICER.txt";
     	String pathForBIChangesSanitized = dir + "biChangesOldToolAllSanitized.txt";
@@ -34,7 +34,7 @@ public class BiChangeComparatorTest {
     	ArrayList<BIChange> biChangesCoEixst = new ArrayList<BIChange>();
     	ArrayList<BIChange> biChangesRedundantInSanitized = new ArrayList<BIChange>();
     	
-    	HashMap<String,ArrayList<BIChange>> mapBIChangesSanitized = new HashMap<String,ArrayList<BIChange>>(); // key fixSha1 + line
+    	HashMap<String,ArrayList<BIChange>> mapBIChangesSanitized = new HashMap<String,ArrayList<BIChange>>(); // key fixSha1 + path + lineNum + line
     	    	
     	for(BIChange biChange:biChangesSanitized){
     		String key = biChange.getFixSha1() + biChange.getPath() + biChange.getLineNumInPrevFixRev() + biChange.getLine().trim();
@@ -47,7 +47,7 @@ public class BiChangeComparatorTest {
     		}
     	}
     	
-    	HashMap<String,ArrayList<BIChange>> mapBIChangesManualSanitized = new HashMap<String,ArrayList<BIChange>>(); // key fixSha1 + line
+    	HashMap<String,ArrayList<BIChange>> mapBIChangesManualSanitized = new HashMap<String,ArrayList<BIChange>>(); // key fixSha1 + path + lineNum + line
     	
     	for(BIChange biChange:biChangesManualSanitized){
     		String key = biChange.getFixSha1() + biChange.getPath() + biChange.getLineNumInPrevFixRev() + biChange.getLine().trim();
@@ -92,7 +92,12 @@ public class BiChangeComparatorTest {
     	
     	System.out.println("Num of not-existing BIChanges: " + biChangesBICERNotExistInSenitized.size());
     	for(BIChange biChange:biChangesBICERNotExistInSenitized){
-    		System.out.println(biChange.getRecord());
+    		if(biChange.getLine().trim().equals(""))
+    			continue;
+    		if(biChange.getLine().trim().equals("{") || biChange.getLine().trim().equals("}"))
+    			System.out.println(biChange.getRecord() + "\ttrue");
+    		else
+    			System.out.println(biChange.getRecord());
     	}
     	
     	System.out.println("Redundant BIChanges in Sanitized: " + biChangesRedundantInSanitized.size());
