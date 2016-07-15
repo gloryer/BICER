@@ -43,8 +43,10 @@ public class CosmeticChange implements Filter {
 		
 		// check edit is null, if null skip
 		if(biChange.getEdit()==null){
-			System.err.println("WARNING: Diff results are different between jGit and git diff");
-			System.err.println(biChange.toString());
+			if(biChange.getIsAddedLine()){
+				System.err.println("WARNING: Diff results are different between jGit and git diff");
+				System.err.println(biChange.toString());
+			} // else this is a deleted line so edit is null. Not a problem.
 			return false;
 		}
 		
