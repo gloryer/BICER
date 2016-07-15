@@ -288,7 +288,7 @@ public class Utils {
 
 	static public boolean doesSameLineExist(String line,String[] lines,boolean trim,boolean ignoreLineComments,boolean isAddedLine,Edit edit){
 
-		line = ignoreLineComments?removeLineComments(line):line;
+		line = ignoreLineComments?removeComments(line):line;
 
 		// if the line is not the added line in a BI change, then check the fix hunk type in only ADDED (Edit.Type.Insert). If only added, it is not a position change
 		if(!isAddedLine){
@@ -297,7 +297,7 @@ public class Utils {
 		}
 
 		for(String lineCompare:lines){
-			lineCompare = ignoreLineComments?removeLineComments(lineCompare):lineCompare;
+			lineCompare = ignoreLineComments?removeComments(lineCompare):lineCompare;
 			if(trim){
 				if(line.trim().equals(lineCompare.trim()))
 					return true;
@@ -313,10 +313,10 @@ public class Utils {
 
 	static public boolean doesContainLine(String line,String[] lines,boolean trim,boolean ignoreLineComments){
 
-		line = ignoreLineComments?removeLineComments(line):line;
+		line = ignoreLineComments?removeComments(line):line;
 
 		for(String lineCompare:lines){
-			lineCompare = ignoreLineComments?removeLineComments(lineCompare):lineCompare;
+			lineCompare = ignoreLineComments?removeComments(lineCompare):lineCompare;
 			if(trim){
 				if(lineCompare.trim().contains(line.trim()))
 					return true;
@@ -330,7 +330,7 @@ public class Utils {
 		return false;
 	}
 
-	public static String removeLineComments(String code) {
+	public static String removeComments(String code) {
 
 		JavaASTParser codeAST = new JavaASTParser(code);
 		@SuppressWarnings("unchecked")
@@ -358,7 +358,7 @@ public class Utils {
 	}
 
 	public static String removeOneLineComment(String line) {
-		return line.replaceAll("[ \\t]*//.*", "");
+		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
 	}
 
 	public static String getStringDateTimeFromCommitTime(int commitTime){
