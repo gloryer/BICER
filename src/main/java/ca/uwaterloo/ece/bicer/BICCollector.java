@@ -26,8 +26,6 @@ import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.RawText;
-import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.RevisionSyntaxException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
@@ -104,7 +102,8 @@ public class BICCollector {
 
 						DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 						df.setRepository(repo);
-						df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
+						df.setDiffAlgorithm(Utils.diffAlgorithm);
+						df.setDiffComparator(Utils.diffComparator);
 						df.setDetectRenames(true);
 						List<DiffEntry> diffs;
 						try {
@@ -232,7 +231,7 @@ public class BICCollector {
 			commitID = repo.resolve(fixSha1 + "~1");
 			blamer.setStartCommit(commitID);
 			blamer.setFilePath(prevPath);
-			BlameResult blame = blamer.setTextComparator(RawTextComparator.WS_IGNORE_ALL).setFollowFileRenames(true).call();
+			BlameResult blame = blamer.setDiffAlgorithm(Utils.diffAlgorithm).setTextComparator(Utils.diffComparator).setFollowFileRenames(true).call();
 
 			ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfDeletedLines; //getOriginalLineIndices(origPrvFileSource,prevFileSource,lstIdxOfDeletedLines);
 			for(int lineIndex:arrIndicesInOriginalFileSource){
@@ -272,7 +271,8 @@ public class BICCollector {
 
 		DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 		df.setRepository(repo);
-		df.setDiffComparator(RawTextComparator.WS_IGNORE_ALL);
+		df.setDiffAlgorithm(Utils.diffAlgorithm);
+		df.setDiffComparator(Utils.diffComparator);
 		df.setDetectRenames(true);
 		
 		// Traverse all commits to collect deleted lines.
@@ -302,12 +302,6 @@ public class BICCollector {
 					
 					String oldPath = diff.getOldPath();
 					String newPath = diff.getNewPath();
-					
-					if(newPath.equals("solr/src/java/org/apache/solr/search/SolrQueryParser.java") && rev.name().equals("d907bd165ed884b90f54969ffa5e6e28bd31c3ef"))
-					try (DiffFormatter formatter = new DiffFormatter(System.out)) {
-                        formatter.setRepository(repo);
-                        formatter.format(diff);
-                    }
 
 					// Skip test case files
 					if(newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
@@ -316,13 +310,7 @@ public class BICCollector {
 					String prevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
 					String fileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1, newPath));	
 					
-					String[] arrPrevFileSource = prevfileSource.split("\n");
-					String[] arrFileSource = fileSource.split("\n");
-
-					
 					EditList editList = Utils.getEditListFromDiff(prevfileSource, fileSource);
-					
-					new DiffFormatter(System.out).format(editList, new RawText(prevfileSource.getBytes()), new RawText(fileSource.getBytes()));
 					
 					String[] arrPrevfileSource=prevfileSource.split("\n");
 					for(Edit edit:editList){
