@@ -176,6 +176,18 @@ public class BIChange implements Comparable<BIChange>{
 				getIsAddedLine() + "\t" +
 				getLine();
 	}
+	
+	public String getRecordWithoutLineNumInPrevFix(){
+		return getBISha1() + "\t" +
+				getBIPath() + "\t" +
+				getPath() + "\t" + 
+				getFixSha1() + "\t" +
+				getBIDate() + "\t" +
+				getFixDate() + "\t" +
+				getLineNum() + "\t" +
+				getIsAddedLine() + "\t" +
+				getLine();
+	}
 
 	public int getLineNumInPrevFixRev() {
 		return lineNumInPrevFixRev;
