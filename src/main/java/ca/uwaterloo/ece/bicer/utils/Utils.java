@@ -14,19 +14,18 @@ import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Comment;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
+import org.eclipse.jgit.diff.DiffAlgorithm;
 import org.eclipse.jgit.diff.DiffConfig;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
-import org.eclipse.jgit.diff.HistogramDiff;
 import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.AmbiguousObjectException;
@@ -45,8 +44,6 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
-import weka.core.Instance;
-import weka.core.Instances;
 
 public class Utils {
 	static public ArrayList<String> getLines(String file,boolean removeHeader){
@@ -71,11 +68,16 @@ public class Utils {
 		return lines;
 	}
 
+	static DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
+	static RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
 	static public EditList getEditListFromDiff(String file1, String file2) {
 		RawText rt1 = new RawText(file1.getBytes());
 		RawText rt2 = new RawText(file2.getBytes());
 		EditList diffList = new EditList();
-		diffList.addAll(new HistogramDiff().diff(RawTextComparator.WS_IGNORE_ALL, rt1, rt2));
+		
+		//diffList.addAll(new HistogramDiff().diff(RawTextComparator.WS_IGNORE_ALL, rt1, rt2));
+		diffList.addAll(diffAlgorithm
+		        .diff(diffComparator, rt1, rt2));
 		return diffList;
 	}
 
@@ -105,7 +107,8 @@ public class Utils {
 		ObjectId commitID;
 		try {
 			commitID = repository.resolve(biChange.getFixSha1() + "~1");
-			blamer.setTextComparator(RawTextComparator.WS_IGNORE_ALL);
+			blamer.setDiffAlgorithm(diffAlgorithm);
+			blamer.setTextComparator(diffComparator);
 			blamer.setFollowFileRenames(true);
 			blamer.setStartCommit(commitID);
 			blamer.setFilePath(biChange.getPath());
@@ -116,7 +119,8 @@ public class Utils {
 			if(blame==null){
 				renamed = true;
 				commitID = repository.resolve(biChange.getBISha1());
-				blamer.setTextComparator(RawTextComparator.WS_IGNORE_ALL);
+				blamer.setDiffAlgorithm(diffAlgorithm);
+				blamer.setTextComparator(diffComparator);
 				blamer.setFollowFileRenames(false);
 				blamer.setStartCommit(commitID);
 				blamer.setFilePath(biChange.getBIPath());
@@ -227,6 +231,8 @@ public class Utils {
 
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			DiffFormatter df = new DiffFormatter(out);
+			df.setDiffAlgorithm(diffAlgorithm);
+			df.setDiffComparator(diffComparator);
 			df.setRepository(repo);
 
 			for(DiffEntry entry:diffs){
