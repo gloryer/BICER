@@ -57,7 +57,7 @@ public class LabelerTest {
     			"2011-06-29"
     	};
     	
-    	String luceneEndDateForTestLabelCollection = "2014-01-16";
+    	String luceneEndDateForTestLabelCollection = "2013-01-16";
     	
     	String path = System.getProperty("user.home") + "/Documents/ODP/projects/lucene/";
     	
@@ -65,8 +65,7 @@ public class LabelerTest {
     	String classAttributeName = "500_Buggy?";
     	String positiveLabel = "1";
     	String pathToChangeIDSha1Pair = path + "change_id_sha1_thin_lucene.txt";
-    	String pathToBIChangesForLabeling = path + "biChanges.txt";
-    	String pathToBIChangesForOldPaths = path + "biChanges.txt";
+    	String pathToBIChangesForLabeling = path + "biChangesBICER.txt";
     	String pathToNewArff = path + "test.arff";
     	String startDate="2010-09-17";
     	String endDate="2010-10-23 23:59:59";
@@ -78,7 +77,7 @@ public class LabelerTest {
     		pathToBIChangesForLabeling = path + "luceneBIsManualIssueCorrected.txt";
     	}
     	
-    	for(int i=0; i<luceneTrainingStartDates.length;i++){
+    	/*for(int i=0; i<luceneTrainingStartDates.length;i++){
     		
     		pathToArff = path + "arffsOriginalWOTestCases/" + i +"/train.arff";
     		startDate = luceneTrainingStartDates[i];
@@ -92,14 +91,13 @@ public class LabelerTest {
     		System.out.println("\n\nData index: " + i);
     		
     		Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
-    				pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection,
-    				pathToBIChangesForOldPaths);
-    	}
+    				pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
+    	}*/
     	
     	
     	// Lucene test sets
-    	/*lastDateForFixCollection = luceneEndDateForTestLabelCollection;
-    	for(int i=0; i<luceneTestStartDates.length;i++){
+    	lastDateForFixCollection = luceneEndDateForTestLabelCollection;
+    	/*for(int i=0; i<luceneTestStartDates.length;i++){
 		
 			pathToArff = path + "arffsOriginalWOTestCases/" + i +"/test.arff";
 			startDate = luceneTestStartDates[i];
@@ -112,8 +110,7 @@ public class LabelerTest {
 			System.out.println("\n\nData index: " + i);
 			
 			Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
-					pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection,
-					pathToBIChangesForOldPaths);
+					pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
     	}*/
     	
     	String[] jackrabbitTrainingStartDates = {
@@ -171,7 +168,7 @@ public class LabelerTest {
     	String jackrabbitEndDateForTestLabelCollection = "2013-01-14";
     	
     	path = System.getProperty("user.home") + "/Documents/ODP/projects/jackrabbit/";
-    	pathToBIChangesForLabeling = path + "biChanges.txt";
+    	pathToBIChangesForLabeling = path + "biChangesBICER.txt";
     	classAttributeName = "500_Buggy?";
     	positiveLabel = "1";
     	pathToChangeIDSha1Pair = path + "change_id_sha1_thin_jackrabbit.txt";
@@ -181,8 +178,8 @@ public class LabelerTest {
     	if(manual){
     		pathToBIChangesForLabeling = path + "jackrabbitBIsManualIssueCorrected.txt";
     	}
-    	pathToBIChangesForOldPaths = path + "biChanges.txt";
-    	/*for(int i=0; i<jackrabbitTrainingStartDates.length;i++){
+
+    	for(int i=0; i<jackrabbitTrainingStartDates.length;i++){
     		
     		pathToArff = path + "arffsOriginalWOTestCases/" + i +"/train.arff";
     		startDate = jackrabbitTrainingStartDates[i];
@@ -196,8 +193,7 @@ public class LabelerTest {
     		System.out.println("\n\nData index: " + i);
     		
     		Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
-    				pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection,
-    				pathToBIChangesForOldPaths);
+    				pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
     	}
     	
     	// Jackrabbit test sets
@@ -215,9 +211,8 @@ public class LabelerTest {
 			System.out.println("\n\nData index: " + i);
 			
 			Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
-					pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection,
-					pathToBIChangesForOldPaths);
-    	}*/
+					pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
+    	}
     	//assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
     }
 }

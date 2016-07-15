@@ -16,7 +16,9 @@ public class SanitizerTest {
         
     	NoiseFilterRunner runner = new NoiseFilterRunner();
     	
-    	String [] args ={"-s", "-d","data/exampleBIChanges.txt", "-g", System.getProperty("user.home") + "/git/BICER"};
+    	String project = "jackrabbit";
+    	String [] args ={"-s", "-d",System.getProperty("user.home") + "/Documents/ODP/projects/" + project + "/biChangesOldToolAllOldPathCorrected.txt",
+    			"-g", System.getProperty("user.home") + "/Documents/ODP/projects/" + project + "/git"};
     	
     	runner.run(args);
     	

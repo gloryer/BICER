@@ -19,13 +19,13 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
 public class BiChangeComparatorTest {
     @Test public void testSomeLibraryMethod() {
     	
-    	String project ="lucene";
-    	String dir = System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project +"/";
+    	String project ="jackrabbit";
+    	String dir = System.getProperty("user.home") + "/Documents/ODP/projects/" + project +"/";
         
     	String pathForBIChangesBICER = dir + "biChangesBICER.txt";
-    	String pathForBIChangesSanitized = dir + "biChangesOldToolAllSanitized.txt";
-    	String pathForBIChangesManualSanitized = dir + "biChangesOldToolManualSanitized.txt"; // real bi lines from biChangesOldToolAllSanitized.txt
-    	
+    	String pathForBIChangesSanitized = dir + "biChangesOldToolAllOldPathCorrectedSanitized.txt";
+    	String pathForBIChangesManualSanitized = dir + "biChangesOldToolManualOldPathCorrectedSanitized.txt"; // real bi lines from biChangesOldToolAllSanitized.txt
+
     	ArrayList<BIChange> biChangesBICER = loadBIChanges(pathForBIChangesBICER, false);
     	ArrayList<BIChange> biChangesSanitized = loadBIChanges(pathForBIChangesSanitized, false);
     	ArrayList<BIChange> biChangesManualSanitized = loadBIChanges(pathForBIChangesManualSanitized, false);
