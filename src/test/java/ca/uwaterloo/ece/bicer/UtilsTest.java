@@ -15,9 +15,9 @@ public class UtilsTest {
 	@Test
 	public void test() {
 		String line = "public /*  dfgh */ static String  removeLineComments(String line) { /*  dfadsf \n asdfasdf */";
-		Utils.removeLineComments(line);
+		Utils.removeOneLineComment(line);
 		System.out.println(line);
-		line = Utils.removeLineComments(line);
+		line = Utils.removeOneLineComment(line);
 		System.out.println(line);
 		assertEquals("public  static String  removeLineComments(String line) { ",line);	
 		
