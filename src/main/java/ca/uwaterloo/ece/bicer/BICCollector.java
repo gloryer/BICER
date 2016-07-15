@@ -111,8 +111,8 @@ public class BICCollector {
 							// do diff
 							diffs = df.scan(parent.getTree(), rev.getTree());
 							for (DiffEntry diff : diffs) {
-								ArrayList<Integer> lstIdxOfDeletedLines = new ArrayList<Integer>();
-								ArrayList<Integer> lstIdxOfOnlyInsteredLines = new ArrayList<Integer>();
+								ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile = new ArrayList<Integer>();
+								ArrayList<Integer> lstIdxOfOnlyInsteredLinesInFixFile = new ArrayList<Integer>();
 								String oldPath = diff.getOldPath();
 								String newPath = diff.getNewPath();
 
@@ -136,20 +136,20 @@ public class BICCollector {
 										int endA = edit.getEndA();
 
 										for(int i=beginA; i < endA ; i++)
-											lstIdxOfDeletedLines.add(i);
+											lstIdxOfDeletedLinesInPrevFixFile.add(i);
 
 									}else{
 										int beginB = edit.getBeginB();
 										int endB = edit.getEndB();
 
 										for(int i=beginB; i < endB ; i++)
-											lstIdxOfOnlyInsteredLines.add(i);
+											lstIdxOfOnlyInsteredLinesInFixFile.add(i);
 									}
 								}
 
 								// get BI commit from lines in lstIdxOfOnlyInsteredLines
-								lstBIChanges.addAll(getBIChangesFromBILineIndices(id,rev.getCommitTime(), newPath, oldPath, prevFileSource,lstIdxOfDeletedLines));
-								lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,fileSource,lstIdxOfOnlyInsteredLines,oldPath,newPath));
+								lstBIChanges.addAll(getBIChangesFromBILineIndices(id,rev.getCommitTime(), newPath, oldPath, prevFileSource,lstIdxOfDeletedLinesInPrevFixFile));
+								lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,fileSource,lstIdxOfOnlyInsteredLinesInFixFile,oldPath,newPath));
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -178,11 +178,11 @@ public class BICCollector {
 
 	private ArrayList<BIChange> getBIChangesFromDeletedBILine(String fixSha1, int fixCommitTime,
 			HashMap<String, ArrayList<DeletedLineInCommits>> mapDeletedLines, String fileSource,
-			ArrayList<Integer> lstIdxOfOnlyInsteredLines, String oldPath, String path) {
+			ArrayList<Integer> lstIdxOfOnlyInsteredLinesInFixFile, String oldPath, String path) {
 		
 		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
 		
-		ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfOnlyInsteredLines;// getOriginalLineIndices(origFileSource,fileSource,lstIdxOfOnlyInsteredLines);
+		ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfOnlyInsteredLinesInFixFile;// getOriginalLineIndices(origFileSource,fileSource,lstIdxOfOnlyInsteredLines);
 		
 		String[] arrOrigFileSource = fileSource.split("\n");
 		for(int lineIdx:arrIndicesInOriginalFileSource){
@@ -220,7 +220,7 @@ public class BICCollector {
 	}
 
 	private ArrayList<BIChange> getBIChangesFromBILineIndices(String fixSha1,int fixCommitTime, String path, String prevPath,
-			String prevFileSource, ArrayList<Integer> lstIdxOfDeletedLines) {
+			String prevFileSource, ArrayList<Integer> lstIdxOfDeletedLinesInPrevFixFile) {
 
 		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
 
@@ -233,7 +233,7 @@ public class BICCollector {
 			blamer.setFilePath(prevPath);
 			BlameResult blame = blamer.setDiffAlgorithm(Utils.diffAlgorithm).setTextComparator(Utils.diffComparator).setFollowFileRenames(true).call();
 
-			ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfDeletedLines; //getOriginalLineIndices(origPrvFileSource,prevFileSource,lstIdxOfDeletedLines);
+			ArrayList<Integer> arrIndicesInOriginalFileSource = lstIdxOfDeletedLinesInPrevFixFile; //getOriginalLineIndices(origPrvFileSource,prevFileSource,lstIdxOfDeletedLines);
 			for(int lineIndex:arrIndicesInOriginalFileSource){
 				RevCommit commit = blame.getSourceCommit(lineIndex);
 
@@ -247,6 +247,9 @@ public class BICCollector {
 				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
 				int lineNum = blame.getSourceLine(lineIndex)+1;
 				int lineNumInPrevFixRev = lineIndex+1;
+				
+				if(prevFileSource.split("\n")[lineIndex].trim().equals("")) // ignore empty line (this happens as comments are removed)
+					continue;
 				
 				BIChange biChange = new BIChange(BISha1,biPath,FixSha1,path,BIDate,FixDate,lineNum,lineNumInPrevFixRev, prevFileSource.split("\n")[lineIndex].trim(),true);
 				biChanges.add(biChange);
