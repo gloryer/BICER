@@ -65,19 +65,20 @@ public class LabelerTest {
     	String classAttributeName = "500_Buggy?";
     	String positiveLabel = "1";
     	String pathToChangeIDSha1Pair = path + "change_id_sha1_thin_lucene.txt";
-    	String pathToBIChangesForLabeling = path + "biChangesBICER.txt";
+    	String pathToBIChangesForLabeling = path + "biChangesBICERNoiseFiltered.txt"; // TODO change appropriate
     	String pathToNewArff = path + "test.arff";
     	String startDate="2010-09-17";
     	String endDate="2010-10-23 23:59:59";
     	String lastDateForFixCollection="2010-11-29";
     	
     	// lucene training set
-    	boolean manual = false;
+    	boolean filtered = true; // TODO change appropriate
+    	boolean manual = false; // TODO change appropriate
     	if(manual){
     		pathToBIChangesForLabeling = path + "luceneBIsManualIssueCorrected.txt";
     	}
     	
-    	/*for(int i=0; i<luceneTrainingStartDates.length;i++){
+    	for(int i=0; i<luceneTrainingStartDates.length;i++){
     		
     		pathToArff = path + "arffsOriginalWOTestCases/" + i +"/train.arff";
     		startDate = luceneTrainingStartDates[i];
@@ -85,6 +86,8 @@ public class LabelerTest {
     		lastDateForFixCollection = luceneTestStartDates[i];
     		if(manual)	
     			pathToNewArff = path + "arffsManyallyCleaned/" + i + "/train.arff";
+    		else if(filtered)
+    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases/" + i + "/train.arff";
     		else
     			pathToNewArff = path + "arffsCleanedWOTestCases/" + i + "/train.arff";
     		
@@ -92,26 +95,28 @@ public class LabelerTest {
     		
     		Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
     				pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
-    	}*/
+    	}
     	
     	
     	// Lucene test sets
     	lastDateForFixCollection = luceneEndDateForTestLabelCollection;
-    	/*for(int i=0; i<luceneTestStartDates.length;i++){
+    	for(int i=0; i<luceneTestStartDates.length;i++){
 		
 			pathToArff = path + "arffsOriginalWOTestCases/" + i +"/test.arff";
 			startDate = luceneTestStartDates[i];
 			endDate = luceneTestEndDates[i] + "23:59:59";
 			if(manual)	
     			pathToNewArff = path + "arffsManyallyCleaned/" + i + "/test.arff";
-    		else
+			else if(filtered)
+    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases/" + i + "/test.arff";
+			else
     			pathToNewArff = path + "arffsCleanedWOTestCases/" + i + "/test.arff";
 			
 			System.out.println("\n\nData index: " + i);
 			
 			Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
 					pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
-    	}*/
+    	}
     	
     	String[] jackrabbitTrainingStartDates = {
     			"2007-09-12",
@@ -168,7 +173,7 @@ public class LabelerTest {
     	String jackrabbitEndDateForTestLabelCollection = "2013-01-14";
     	
     	path = System.getProperty("user.home") + "/Documents/ODP/projects/jackrabbit/";
-    	pathToBIChangesForLabeling = path + "biChangesBICER.txt";
+    	pathToBIChangesForLabeling = path + "biChangesBICERNoiseFiltered.txt"; // TODO change appropriate
     	classAttributeName = "500_Buggy?";
     	positiveLabel = "1";
     	pathToChangeIDSha1Pair = path + "change_id_sha1_thin_jackrabbit.txt";
@@ -187,6 +192,8 @@ public class LabelerTest {
     		lastDateForFixCollection = jackrabbitTestStartDates[i];
     		if(manual)	
     			pathToNewArff = path + "arffsManyallyCleaned/" + i + "/train.arff";
+    		else if(filtered)
+    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases/" + i + "/train.arff";
     		else
     			pathToNewArff = path + "arffsCleanedWOTestCases/" + i + "/train.arff";
     		
@@ -205,7 +212,9 @@ public class LabelerTest {
 			endDate = jackrabbitTestEndDates[i] + "23:59:59";
 			if(manual)	
     			pathToNewArff = path + "arffsManyallyCleaned/" + i + "/test.arff";
-    		else
+			else if(filtered)
+    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases/" + i + "/test.arff";
+			else
     			pathToNewArff = path + "arffsCleanedWOTestCases/" + i + "/test.arff";
 			
 			System.out.println("\n\nData index: " + i);
