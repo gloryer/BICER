@@ -117,7 +117,7 @@ public class BICCollector {
 								String newPath = diff.getNewPath();
 
 								// ignore when no previous revision of a file, Test files, and non-java files.
-								if(oldPath.equals("/dev/null") || newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
+								if(oldPath.equals("/dev/null") || newPath.indexOf("Test")>=0  || newPath.indexOf("/test")>=0 || !newPath.endsWith(".java")) continue;
 
 								String id =  rev.name() + "";
 
@@ -307,7 +307,7 @@ public class BICCollector {
 					String newPath = diff.getNewPath();
 
 					// Skip test case files
-					if(newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
+					if(newPath.indexOf("Test")>=0 || newPath.indexOf("/test")>=0 || !newPath.endsWith(".java")) continue;
 					
 					// Do diff on files without comments to only consider code lines
 					String prevfileSource=Utils.removeLineComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
