@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.Comment;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.StructuralPropertyDescriptor;
@@ -69,87 +70,87 @@ public class Utils {
 
 		return lines;
 	}
-	
+
 	static public EditList getEditListFromDiff(String file1, String file2) {
-        RawText rt1 = new RawText(file1.getBytes());
-        RawText rt2 = new RawText(file2.getBytes());
-        EditList diffList = new EditList();
-        diffList.addAll(new HistogramDiff().diff(RawTextComparator.WS_IGNORE_ALL, rt1, rt2));
-        return diffList;
+		RawText rt1 = new RawText(file1.getBytes());
+		RawText rt2 = new RawText(file2.getBytes());
+		EditList diffList = new EditList();
+		diffList.addAll(new HistogramDiff().diff(RawTextComparator.WS_IGNORE_ALL, rt1, rt2));
+		return diffList;
 	}
-	
+
 	static public Object[] getASTNodeChildren(ASTNode node) {
-	    List list= node.structuralPropertiesForType();
-	    for (int i= 0; i < list.size(); i++) {
-	        StructuralPropertyDescriptor curr= (StructuralPropertyDescriptor) list.get(i);
-	            Object child= node.getStructuralProperty(curr);
-	        if (child instanceof List) {
-	                return ((List) child).toArray();
-	        } else if (child instanceof ASTNode) {
-	            return new Object[] { child };
-	            }
-	        return new Object[0];
-	    }
+		List list= node.structuralPropertiesForType();
+		for (int i= 0; i < list.size(); i++) {
+			StructuralPropertyDescriptor curr= (StructuralPropertyDescriptor) list.get(i);
+			Object child= node.getStructuralProperty(curr);
+			if (child instanceof List) {
+				return ((List) child).toArray();
+			} else if (child instanceof ASTNode) {
+				return new Object[] { child };
+			}
+			return new Object[0];
+		}
 		return null;
 	}
-	
+
 	public static BIChange getBIChangeWithCorrectBISha1(Git git, BIChange biChange) {
-		
+
 		// skip biLine is a deleted line
 		if(!biChange.getIsAddedLine())
 			return biChange;
-		
+
 		Repository repository = git.getRepository();
 		BlameCommand blamer = new BlameCommand(repository);
-        ObjectId commitID;
+		ObjectId commitID;
 		try {
 			commitID = repository.resolve(biChange.getFixSha1() + "~1");
 			blamer.setTextComparator(RawTextComparator.WS_IGNORE_ALL);
 			blamer.setFollowFileRenames(true);
 			blamer.setStartCommit(commitID);
-	        blamer.setFilePath(biChange.getPath());
-	        BlameResult blame = blamer.call();
-	        
-	        // biPath might be different from fixPath
-	        boolean renamed = false;
-	        if(blame==null){
-	        	renamed = true;
-	        	commitID = repository.resolve(biChange.getBISha1());
+			blamer.setFilePath(biChange.getPath());
+			BlameResult blame = blamer.call();
+
+			// biPath might be different from fixPath
+			boolean renamed = false;
+			if(blame==null){
+				renamed = true;
+				commitID = repository.resolve(biChange.getBISha1());
 				blamer.setTextComparator(RawTextComparator.WS_IGNORE_ALL);
 				blamer.setFollowFileRenames(false);
 				blamer.setStartCommit(commitID);
-		        blamer.setFilePath(biChange.getBIPath());
-		        blame = blamer.call();
-	        }
-	        
-	        // get code
-	        String fixCode = fetchBlob(repository,biChange.getFixSha1(),biChange.getPath());
-	        
-	        String preFixCode = !renamed?fetchBlob(repository,biChange.getFixSha1() + "~1",biChange.getPath())
-	        						:fetchBlob(repository,biChange.getBISha1(),biChange.getBIPath());
-	        
-	        String[] splitlines = preFixCode.split("\n");
-	        
-	        EditList editList = getEditListFromDiff(preFixCode,fixCode);
-	        
-	        // find a biLine among changed lines
-	        ArrayList<Integer> candidateLineNums = new ArrayList<Integer>(); // line num starts from 0
-	        for(Edit edit:editList){
-	        	if(edit.getType()==Edit.Type.DELETE || edit.getType()==Edit.Type.REPLACE){
-		        	for(int i = edit.getBeginA();i<edit.getBeginA()+edit.getLengthA();i++){
-		        		if(biChange.getLine().equals(splitlines[i].trim()))
-		        			candidateLineNums.add(i);
-		        	}
-	        	}
-	        }
-	        
-	        // get the best lineNum
-	        int originalLineNum = biChange.getLineNum();
-	        if(candidateLineNums.size()==1){
-	        	biChange.setLineNum(candidateLineNums.get(0)+1);
-	        	if(biChange.getLineNum()!=candidateLineNums.get(0)+1){
-		        	System.err.println("WARNING: LinNum updated: " + originalLineNum +  "==>" + biChange.getLineNum() + "\n" + biChange.toString());
-		        }
+				blamer.setFilePath(biChange.getBIPath());
+				blame = blamer.call();
+			}
+
+			// get code
+			String fixCode = fetchBlob(repository,biChange.getFixSha1(),biChange.getPath());
+
+			String preFixCode = !renamed?fetchBlob(repository,biChange.getFixSha1() + "~1",biChange.getPath())
+					:fetchBlob(repository,biChange.getBISha1(),biChange.getBIPath());
+
+			String[] splitlines = preFixCode.split("\n");
+
+			EditList editList = getEditListFromDiff(preFixCode,fixCode);
+
+			// find a biLine among changed lines
+			ArrayList<Integer> candidateLineNums = new ArrayList<Integer>(); // line num starts from 0
+			for(Edit edit:editList){
+				if(edit.getType()==Edit.Type.DELETE || edit.getType()==Edit.Type.REPLACE){
+					for(int i = edit.getBeginA();i<edit.getBeginA()+edit.getLengthA();i++){
+						if(biChange.getLine().equals(splitlines[i].trim()))
+							candidateLineNums.add(i);
+					}
+				}
+			}
+
+			// get the best lineNum
+			int originalLineNum = biChange.getLineNum();
+			if(candidateLineNums.size()==1){
+				biChange.setLineNum(candidateLineNums.get(0)+1);
+				if(biChange.getLineNum()!=candidateLineNums.get(0)+1){
+					System.err.println("WARNING: LinNum updated: " + originalLineNum +  "==>" + biChange.getLineNum() + "\n" + biChange.toString());
+				}
 			}
 			else{
 				// heuristic to get the best matching line
@@ -162,17 +163,17 @@ public class Utils {
 				if(originalLineNum!=biChange.getLineNum())
 					System.err.println("WARNING: LineNum updated(2): " + originalLineNum +  "==>" + biChange.getLineNum() + "\n" + biChange.toString());
 			}
-	        
-	        RevCommit commit = blame.getSourceCommit(biChange.getLineNum()-1);
-	        if(!commit.name().equals(biChange.getBISha1())){
-	        	System.err.println("WARNING: Wrong BI Sha1 - correct BI Sha1 = " + commit.name() + " lineNum=" + biChange.getLineNum() + "\n" + biChange.toString());
-	        	System.err.println("git blame -w -C " + biChange.getFixSha1() + "~1 -- " + biChange.getPath());
-	        	biChange.setBISha1(commit.name());
-	        }
-	        biChange.setBISha1(commit.name());
-	        biChange.setLineNumInPrevFixRev(biChange.getLineNum()); // set lineNum in the code of previous revisions of the fix revision
-	        biChange.setLineNum(blame.getSourceLine(biChange.getLineNum()-1)+1); // set lineNum in BI code
-            /*for (int i = 0; i < splitlines.length; i++) {
+
+			RevCommit commit = blame.getSourceCommit(biChange.getLineNum()-1);
+			if(!commit.name().equals(biChange.getBISha1())){
+				System.err.println("WARNING: Wrong BI Sha1 - correct BI Sha1 = " + commit.name() + " lineNum=" + biChange.getLineNum() + "\n" + biChange.toString());
+				System.err.println("git blame -w -C " + biChange.getFixSha1() + "~1 -- " + biChange.getPath());
+				biChange.setBISha1(commit.name());
+			}
+			biChange.setBISha1(commit.name());
+			biChange.setLineNumInPrevFixRev(biChange.getLineNum()); // set lineNum in the code of previous revisions of the fix revision
+			biChange.setLineNum(blame.getSourceLine(biChange.getLineNum()-1)+1); // set lineNum in BI code
+			/*for (int i = 0; i < splitlines.length; i++) {
                 RevCommit commit = blame.getSourceCommit(i);
                 System.out.println("Line: " + (i+1) + ": " + commit.name() + splitlines[i]);
             }*/  
@@ -192,10 +193,10 @@ public class Utils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        
+
 		return biChange;
 	}
-	
+
 	static public EditList getEditListFromDiff(Git git,String oldSha1, String newSha1, String path){
 
 		Repository repo = git.getRepository();
@@ -207,7 +208,7 @@ public class Utils {
 
 
 			ObjectReader reader = repo.newObjectReader();
-			
+
 			// setting for renamed or copied path
 			Config config = new Config();
 			config.setBoolean("diff", null, "renames", true);
@@ -229,19 +230,19 @@ public class Utils {
 			df.setRepository(repo);
 
 			for(DiffEntry entry:diffs){
-		
+
 				df.format(entry);
 				FileHeader fileHeader = df.toFileHeader( entry );
 				if(!fileHeader.getNewPath().equals(path))
 					continue;
-				
+
 				return fileHeader.toEditList();
 			}
-			
+
 			df.close();
 
 		} catch (IndexOutOfBoundsException e){
-					
+
 		}
 		catch (RevisionSyntaxException | IOException | GitAPIException e) {
 			e.printStackTrace();
@@ -282,7 +283,7 @@ public class Utils {
 	static public boolean doesSameLineExist(String line,String[] lines,boolean trim,boolean ignoreLineComments,boolean isAddedLine,Edit edit){
 
 		line = ignoreLineComments?removeLineComments(line):line;
-		
+
 		// if the line is not the added line in a BI change, then check the fix hunk type in only ADDED (Edit.Type.Insert). If only added, it is not a position change
 		if(!isAddedLine){
 			if(edit!=null && edit.getType().equals(Edit.Type.INSERT))
@@ -322,33 +323,38 @@ public class Utils {
 
 		return false;
 	}
-	
-	// TODO need to be updated using ASTParser? RegExp requires huge stack size in some files.
-	public static String removeLineComments(String line) {
-		// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
-		// (/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/|[ \t]*//.*)
-		//String newLine = line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/)", "");
-		//newLine = newLine.replaceAll("([ \\t]*//.*)", "");
-		//String newLine = line.replaceAll("/\\*.*\\*/", "");
-		//newLine = newLine.replaceAll("//.*(?=\\n)", "");
-		//return line.replaceAll("\\/\\*([\\S\\s]+?)\\*\\/","").replaceAll("([ \\t]*//.*)","");
-		//return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/)","").replaceAll("([ \\t]*//.*)","");
-		return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/|[ \\t]*//.*)", "");
-	}
-	
-	// TODO need to be updated using ASTParser? RegExp requires huge stack size in some files.
-		public static String removeOneLineComment(String line) {
-			// http://stackoverflow.com/questions/2613432/remove-source-file-comments-using-intellij
-			// (/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/|[ \t]*//.*)
-			//String newLine = line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/)", "");
-			//newLine = newLine.replaceAll("([ \\t]*//.*)", "");
-			//String newLine = line.replaceAll("/\\*.*\\*/", "");
-			//newLine = newLine.replaceAll("//.*(?=\\n)", "");
-			//return line.replaceAll("\\/\\*([\\S\\s]+?)\\*\\/","").replaceAll("([ \\t]*//.*)","");
-			//return line.replaceAll("(/\\*([^*]|[\\r\\n]|(\\*+([^*/]|[\\r\\n])))*\\*+/)","").replaceAll("([ \\t]*//.*)","");
-			return line.replaceAll("[ \\t]*//.*", "");
+
+	public static String removeLineComments(String code) {
+
+		JavaASTParser codeAST = new JavaASTParser(code);
+		@SuppressWarnings("unchecked")
+		List<Comment> lstComments = codeAST.cUnit.getCommentList();
+
+		for(Comment comment:lstComments){
+			code = replaceComments(code,comment.getStartPosition(),comment.getLength());
 		}
-	
+
+		return code;
+	}
+
+	private static String replaceComments(String code, int startPosition, int length) {
+
+		String pre = code.substring(0,startPosition);
+		String post = code.substring(startPosition+length,code.length());
+
+		String comments = code.substring(startPosition, startPosition+length);
+
+		comments = comments.replaceAll("\\S"," ");
+
+		code = pre + comments + post;
+
+		return code;
+	}
+
+	public static String removeOneLineComment(String line) {
+		return line.replaceAll("[ \\t]*//.*", "");
+	}
+
 	public static String getStringDateTimeFromCommitTime(int commitTime){
 		SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 		Date commitDate = new Date(commitTime* 1000L);
@@ -367,35 +373,35 @@ public class Utils {
 	}
 
 	public static boolean compareMethodParametersFromAST(List<SingleVariableDeclaration> parameters1, List<SingleVariableDeclaration> parameters2) {
-		
+
 		if(parameters1.size()!=parameters2.size())
 			return false;
-		
+
 		for(int i=0;i<parameters1.size();i++){
 			String type1 = parameters1.get(i).getType().toString();
 			String type2 = parameters2.get(i).getType().toString();
 			if(!type1.equals(type2.toString()))
 				return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	public static int getStartPosition(String biSource, int lineNum) {
-		
+
 		int currentPosition = 0;
 		String[] lines = biSource.split("\n");
-		
+
 		for(int i=0; i < lines.length; i++){
 			if(i==lineNum-1)
 				return currentPosition;
-			
+
 			currentPosition+=lines[i].length() + 1; // + 1 is for \n
 		}
-		
+
 		return -1;
 	}
-	
+
 	static public ArrayList<BIChange> loadBIChanges(String pathToBIChangeData,boolean isNonSanitized) {
 		ArrayList<String> BIChangeInfo = getLines(pathToBIChangeData, true);
 		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
@@ -404,20 +410,20 @@ public class Utils {
 		}
 		return biChanges;
 	}
-	
+
 	public static void writeAFile(String lines, String targetFileName){
 		try {
 			File file= new File(targetFileName);
 			File parent = file.getParentFile();
 			if(!parent.exists() && !parent.mkdirs()){
-			    System.err.println("Couldn't create dir: " + parent);
-			    System.exit(0);
+				System.err.println("Couldn't create dir: " + parent);
+				System.exit(0);
 			}
 			FileOutputStream fos = new FileOutputStream(file);
 			DataOutputStream dos=new DataOutputStream(fos);
-			
+
 			dos.writeBytes(lines);
-				
+
 			dos.close();
 			fos.close();
 		} catch (IOException e) {
