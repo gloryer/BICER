@@ -411,7 +411,14 @@ public class Utils {
 	static public ArrayList<BIChange> loadBIChanges(String pathToBIChangeData,boolean isNonSanitized) {
 		ArrayList<String> BIChangeInfo = getLines(pathToBIChangeData, true);
 		ArrayList<BIChange> biChanges = new ArrayList<BIChange>();
+		int i=0;
 		for(String info: BIChangeInfo){
+			i++;
+			if(info.trim().equals("")){
+				System.err.println("WARNING: loading BIChanges stopped at line: " + i + " / " + (BIChangeInfo.size()+1));
+				System.err.println("If the data file is not the *NoiseFiltered.txt, it gets a propblem! Ohterwise, it's OK.");
+				break;
+			}
 			biChanges.add(new BIChange(info,isNonSanitized));
 		}
 		return biChanges;
