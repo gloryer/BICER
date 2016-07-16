@@ -12,11 +12,14 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.Edit;
 import org.eclipse.jgit.diff.EditList;
+import org.eclipse.jgit.diff.RawText;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import ca.uwaterloo.ece.bicer.noisefilters.Filter;
@@ -103,26 +106,38 @@ public class NoiseFilterRunner {
 			String biPath = biChange.getBIPath();
 			String fixPath = biChange.getPath();
 			
+			//if(!(fixPath.equals("lucene/src/java/org/apache/lucene/search/cache/CachedArrayCreator.java") && biChange.getLine().equals("return valid;")))
+			//	continue;
+			
 			// load whole fix code
 			try {
-				String code = Utils.removeComments(Utils.fetchBlob(repo, preFixSha1, fixPath));
-				if(code.equals("")){
+				String prevFixCode = Utils.fetchBlob(repo, preFixSha1, fixPath);
+				String prefixCodeWithoutComments = Utils.removeComments(prevFixCode);
+				if(prefixCodeWithoutComments.equals("")){
 					System.err.println("WARNING pre fix revision path does not exist: " + fixSha1 + ":" + fixPath);
 					System.err.println("Try to get code from biPath " + biPath);
-					code = Utils.removeComments(Utils.fetchBlob(repo, biChange.getBISha1(), biPath));
-					if(code.equals("")){
+					prevFixCode = Utils.removeComments(Utils.fetchBlob(repo, biChange.getBISha1(), biPath));
+					prefixCodeWithoutComments = Utils.removeComments(prevFixCode);
+					if(prefixCodeWithoutComments.equals("")){
 						System.err.println("WARNING even bi path does not exist: " + biPath);
 						System.exit(0);
 					}
 				}
 				
-				wholePreFixCode = code.split("\n");
+				wholePreFixCode = prefixCodeWithoutComments.split("\n");
 				
-				wholeFixCode = Utils.removeComments(Utils.fetchBlob(repo, fixSha1, fixPath)).split("\n");
+				String fixCode = Utils.fetchBlob(repo, fixSha1, fixPath);
+				wholeFixCode = Utils.removeComments(fixCode).split("\n");
 
 				editListFromDiff = Utils.getEditListFromDiff(Utils.getStringFromStringArray(wholePreFixCode),Utils.getStringFromStringArray(wholeFixCode));
 				//editListFromDiff = Utils.getEditListFromDiff(git, preFixSha1, fixSha1, fixPath);//Utils.getEditListFromDiff(Utils.getStringFromStringArray(wholePreFixCode),Utils.getStringFromStringArray(wholeFixCode));
 
+				/*DiffFormatter df = new DiffFormatter(System.out);
+				df.setDiffAlgorithm(Utils.diffAlgorithm);
+				df.setDiffComparator(Utils.diffComparator);
+				
+				df.format(editListFromDiff, new RawText(prevFixCode.getBytes()), new RawText(fixCode.getBytes()));*/
+				
 			} catch (MissingObjectException e) {
 				System.err.println("The sha1 does not exist: " + fixSha1 + ":" + fixPath);
 				biChangesNotExist.add(biChange);
