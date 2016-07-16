@@ -194,7 +194,7 @@ public class BICCollector {
 			
 			DeletedLineInCommits deletedLineToConsider = null;
 			for(DeletedLineInCommits deletedLine:lstDeletedLines){
-				if(deletedLine.getBIDate().compareTo(Utils.getStringDateTimeFromCommitTime(fixCommitTime))<=0
+				if(deletedLine.getBIDate().compareTo(Utils.getStringDateTimeFromCommitTime(fixCommitTime)) < 0
 						&& deletedLine.getPath().equals(oldPath)){
 					deletedLineToConsider = deletedLine;
 				}
