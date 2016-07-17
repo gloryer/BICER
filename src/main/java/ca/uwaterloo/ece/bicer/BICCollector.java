@@ -186,8 +186,8 @@ public class BICCollector {
 		
 		String[] arrOrigFileSource = fileSource.split("\n");
 		for(int lineIdx:arrIndicesInOriginalFileSource){
-			String line = arrOrigFileSource[lineIdx].trim();
-			ArrayList<DeletedLineInCommits> lstDeletedLines = mapDeletedLines.get(line);
+			String addedlineInFixCommit = arrOrigFileSource[lineIdx].trim();
+			ArrayList<DeletedLineInCommits> lstDeletedLines = mapDeletedLines.get(addedlineInFixCommit);
 			
 			if(lstDeletedLines==null)
 				continue;
@@ -200,7 +200,7 @@ public class BICCollector {
 				}
 			}
 			if(deletedLineToConsider==null)
-				return biChanges;
+				continue;	// no deleted lines exist in lstDeletedLines. Do process next added line
 			else{
 				// get BIChange from the deleted line
 				String BISha1 = deletedLineToConsider.getSha1();
@@ -211,7 +211,7 @@ public class BICCollector {
 				String FixDate = Utils.getStringDateTimeFromCommitTime(fixCommitTime);
 				int lineNumInPrevFixRev = lineIdx+1; // this info is not important in case of a deleted line.
 				 
-				BIChange biChange = new BIChange(BISha1,biPath,FixSha1,path,BIDate,FixDate,lineIdx+1,lineNumInPrevFixRev,line,false);
+				BIChange biChange = new BIChange(BISha1,biPath,FixSha1,path,BIDate,FixDate,lineIdx+1,lineNumInPrevFixRev,addedlineInFixCommit,false);
 				biChanges.add(biChange);
 			}
 		}
