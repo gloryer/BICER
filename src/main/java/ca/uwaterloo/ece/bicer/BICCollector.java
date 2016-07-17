@@ -202,6 +202,12 @@ public class BICCollector {
 			if(deletedLineToConsider==null)
 				continue;	// no deleted lines exist in lstDeletedLines. Do process next added line
 			else{
+				
+				// heuristic: line num difference between BI and Fix commits is <= 10, the consider the line is BILine.
+				int lineGap = Math.abs(deletedLineToConsider.getLineNum() - (lineIdx+1));
+				if(lineGap > 10)
+					continue;
+				
 				// get BIChange from the deleted line
 				String BISha1 = deletedLineToConsider.getSha1();
 				String biPath = deletedLineToConsider.getPath();
