@@ -20,9 +20,10 @@ public class RemoveUnnImport implements Filter {
 	@Override
 	public boolean filterOut() {
 		
+		// import line in a deleted line a BI change can be noise so ignore all import changes.
 		// No need to consider a deleted line in a BI change
-		if(!biChange.getIsAddedLine())
-			return false;
+		//if(!biChange.getIsAddedLine())
+		//	return false;
 		
 		String stmt = biChange.getLine();
 		
