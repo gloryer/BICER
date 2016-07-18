@@ -106,7 +106,10 @@ public class NoiseFilterRunner {
 			String biPath = biChange.getBIPath();
 			String fixPath = biChange.getPath();
 			
-			//if(!(fixPath.equals("lucene/src/java/org/apache/lucene/search/cache/CachedArrayCreator.java") && biChange.getLine().equals("return valid;")))
+			
+			
+			//if(!(fixPath.equals("lucene/src/java/org/apache/lucene/index/DocumentsWriterStallControl.java")
+			//		&& biChange.getLine().equals("while (flushControl.numActiveDWPT() < flushControl.numFlushingDWPT()) {")))
 			//	continue;
 			
 			// load whole fix code
@@ -257,7 +260,7 @@ public class NoiseFilterRunner {
 				break;
 			}
 			
-			if(beginA < biChange.getLineNumInPrevFixRev() && biChange.getLineNumInPrevFixRev()<=endA){
+			if(beginA <= biChange.getLineNumInPrevFixRev() && biChange.getLineNumInPrevFixRev()<=endA+1){
 				biChange.setEdit(edit);
 				break;
 			}
