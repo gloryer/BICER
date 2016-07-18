@@ -14,7 +14,8 @@ public class NoiseFilterRunnerTest {
     	NoiseFilterRunner runner = new NoiseFilterRunner();
     	
     	//String [] args ={"-d","data/exampleBIChanges.txt", "-g", System.getProperty("user.home") + "/git/BICER"};
-    	String [] args ={"-d",System.getProperty("user.home") + "/Documents/ODP/projects/lucene/biChangesBICER.txt", "-g", System.getProperty("user.home") + "/Documents/ODP/projects/lucene/git"};
+    	String [] args ={"-d",System.getProperty("user.home") + "/Documents/UW/ODP/projects/lucene/biChangesSanitized.txt", "-g",
+    				System.getProperty("user.home") + "/Documents/UW/ODP/projects/lucene/git/git"};
     	
     	runner.run(args);
     	

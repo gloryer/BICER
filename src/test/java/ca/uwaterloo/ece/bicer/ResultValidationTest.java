@@ -17,8 +17,8 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
 public class ResultValidationTest {
     @Test public void testSomeLibraryMethod() {
     	
-    	String project ="lucene";
-    	String dir = System.getProperty("user.home") + "/Documents/ODP/projects/" + project +"/";
+    	String project ="jackrabbit";
+    	String dir = System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project +"/";
         
     	String pathForBIChanges = dir + "biChanges.txt";
     	String pathForBIChangesSanitized = dir + "biChangesSanitized.txt";
@@ -248,7 +248,14 @@ public class ResultValidationTest {
 			}
 			
 			if(ready){
-				BIChange biChange = new BIChange(line,false);
+				String[] splitLine = line.split("\t");
+				String lineWODueto = "";
+				if(splitLine.length==11){
+					lineWODueto = "";
+					for(int i=0;i<splitLine.length-1;i++) // do not add last one
+						lineWODueto += splitLine[i] + "\t";
+				}
+				BIChange biChange = new BIChange(lineWODueto.trim(),false);
 				
 				biChange.setFilteredDueTo(line.split("\t")[10]);
 				biChangesIdentifiedAsNoise.add(biChange);

@@ -19,12 +19,12 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
 public class BiChangeComparatorTest {
     @Test public void testSomeLibraryMethod() {
     	
-    	String project ="jackrabbit";
-    	String dir = System.getProperty("user.home") + "/Documents/ODP/projects/" + project +"/";
+    	String project ="lucene";
+    	String dir = System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project +"/";
         
     	String pathForBIChangesBICER = dir + "biChangesBICER.txt";
-    	String pathForBIChangesSanitized = dir + "biChangesOldToolAllOldPathCorrectedSanitized.txt";
-    	String pathForBIChangesManualSanitized = dir + "biChangesOldToolManualOldPathCorrectedSanitized.txt"; // real bi lines from biChangesOldToolAllSanitized.txt
+    	String pathForBIChangesSanitized = dir + "biChangesBICER_partial_manual.txt"; // for reuse labels from oldtool "biChangesOldToolAllOldPathCorrectedSanitized.txt";
+    	String pathForBIChangesManualSanitized = dir + "biChangesBICER_partial_manual_no_noise.txt"; // for labeling: real bi lines from biChangesOldToolAllSanitized.txt
 
     	ArrayList<BIChange> biChangesBICER = loadBIChanges(pathForBIChangesBICER, false);
     	ArrayList<BIChange> biChangesSanitized = loadBIChanges(pathForBIChangesSanitized, false);
@@ -37,7 +37,7 @@ public class BiChangeComparatorTest {
     	HashMap<String,ArrayList<BIChange>> mapBIChangesSanitized = new HashMap<String,ArrayList<BIChange>>(); // key fixSha1 + path + lineNum + line
     	    	
     	for(BIChange biChange:biChangesSanitized){
-    		String key = biChange.getFixSha1() + biChange.getPath() + biChange.getLineNumInPrevFixRev() + biChange.getLine().trim();
+    		String key = biChange.getFixSha1() + biChange.getPath()+biChange.getLineNum() + ":" + biChange.getLineNumInPrevFixRev() + biChange.getIsAddedLine();// + biChange.getLine().trim();
     		if(!mapBIChangesSanitized.containsKey(key)){
     			ArrayList<BIChange> arrBIChange = new ArrayList<BIChange>();
     			arrBIChange.add(biChange);
@@ -50,7 +50,7 @@ public class BiChangeComparatorTest {
     	HashMap<String,ArrayList<BIChange>> mapBIChangesManualSanitized = new HashMap<String,ArrayList<BIChange>>(); // key fixSha1 + path + lineNum + line
     	
     	for(BIChange biChange:biChangesManualSanitized){
-    		String key = biChange.getFixSha1() + biChange.getPath() + biChange.getLineNumInPrevFixRev() + biChange.getLine().trim();
+    		String key = biChange.getFixSha1() + biChange.getPath()+biChange.getLineNum() + ":" + biChange.getLineNumInPrevFixRev() + biChange.getIsAddedLine();// + biChange.getLine().trim();
     		if(!mapBIChangesManualSanitized.containsKey(key)){
     			ArrayList<BIChange> arrBIChange = new ArrayList<BIChange>();
     			arrBIChange.add(biChange);
@@ -60,9 +60,10 @@ public class BiChangeComparatorTest {
     		}
     	}
     	
+    	// labeling
     	for(BIChange biChange:biChangesBICER){
     		
-    		String key = biChange.getFixSha1() + biChange.getPath() + biChange.getLineNumInPrevFixRev() +  biChange.getLine().trim();
+    		String key = biChange.getFixSha1() + biChange.getPath() +biChange.getLineNum() + ":" + biChange.getLineNumInPrevFixRev() + biChange.getIsAddedLine();// +  biChange.getLine().trim();
     		
     		if(mapBIChangesSanitized.containsKey(key)){
     			ArrayList<BIChange> arrBIChange = mapBIChangesSanitized.get(key);
