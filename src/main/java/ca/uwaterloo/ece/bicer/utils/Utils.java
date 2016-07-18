@@ -443,4 +443,26 @@ public class Utils {
 			e.printStackTrace();
 		} 
 	}
+	
+	public static void writeAFile(ArrayList<String> lines, String targetFileName){
+		try {
+			File file= new File(targetFileName);
+			File parent = file.getParentFile();
+			if(!parent.exists() && !parent.mkdirs()){
+				System.err.println("Couldn't create dir: " + parent);
+				System.exit(0);
+			}
+			FileOutputStream fos = new FileOutputStream(file);
+			DataOutputStream dos=new DataOutputStream(fos);
+			
+			for(String line:lines){
+				dos.write((line+"\n").getBytes());
+			}
+			//dos.writeBytes();
+			dos.close();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
 }

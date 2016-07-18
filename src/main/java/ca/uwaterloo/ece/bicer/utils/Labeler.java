@@ -64,7 +64,21 @@ public class Labeler {
 			//System.exit(0);
 		}
 		
-		Utils.writeAFile(instances.toString(), pathToNewArff);
+		ArrayList<String> lines = new ArrayList<String>();
+		
+		lines.add(instances.ARFF_RELATION + " " + instances.relationName());
+		
+		for (int i = 0; i < instances.numAttributes(); i++) {
+			lines.add(instances.attribute(i).toString());
+		}
+		
+		lines.add("\n" + instances.ARFF_DATA);
+		
+		for(int i=0; i < instances.numInstances();i++)
+			lines.add(instances.get(i).toString());
+		
+		
+		Utils.writeAFile(lines, pathToNewArff);
 	}
 
 	private static String getNewLabel(String key, String startDate, String endDate, String lastDateForFixCollection,
