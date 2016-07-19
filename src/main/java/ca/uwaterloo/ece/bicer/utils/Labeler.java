@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
@@ -66,13 +69,13 @@ public class Labeler {
 		
 		ArrayList<String> lines = new ArrayList<String>();
 		
-		lines.add(instances.ARFF_RELATION + " " + instances.relationName());
+		lines.add(Instances.ARFF_RELATION + " " + instances.relationName());
 		
 		for (int i = 0; i < instances.numAttributes(); i++) {
 			lines.add(instances.attribute(i).toString());
 		}
 		
-		lines.add("\n" + instances.ARFF_DATA);
+		lines.add("\n" + Instances.ARFF_DATA);
 		
 		for(int i=0; i < instances.numInstances();i++)
 			lines.add(instances.get(i).toString());
@@ -85,21 +88,31 @@ public class Labeler {
 			HashMap<String, ArrayList<BIChange>> biChangesByKey) {
 		
 		String newLabel = "0"; // 0: clean 1: buggy
-		
-		if(biChangesByKey.get(key)==null){
-			return newLabel;
-		}
-		
-		for(BIChange biChange:biChangesByKey.get(key)){
-			if(biChange.getFixDate().compareTo(lastDateForFixCollection)>=0) // if fixDate >= lastDateForFixCollection (no inclusive for labeling), continue
-				continue;
-			// continue when not startDate < biDate < endDate
-			if(!(startDate.compareTo(biChange.getBIDate()) <= 0 && biChange.getBIDate().compareTo(endDate)<=0))
-				continue;
+		try {
+			Date sDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(startDate);  // GMT
+			Date eDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(endDate); // GMT
+			Date lDateForFixCollection = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(lastDateForFixCollection); // GMT
 			
-			// biChange is now valid for a buggy label
-			newLabel = "1";
+			if(biChangesByKey.get(key)==null){
+				return newLabel;
+			}
+			
+			for(BIChange biChange:biChangesByKey.get(key)){
+					Date biDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(biChange.getBIDate()); // load Date in local timezone
+					Date fixDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(biChange.getFixDate()); // load Date in local timezone
 				
+					if(fixDate.compareTo(lDateForFixCollection)>=0) // if fixDate >= lastDateForFixCollection (no inclusive for labeling), continue
+						continue;
+					// continue when not startDate < biDate < endDate
+					if(!(sDate.compareTo(biDate) <= 0 && biDate.compareTo(eDate)<=0))
+						continue;
+					
+					// biChange is now valid for a buggy label
+					newLabel = "1";
+			}
+		
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 		
 		return newLabel;
