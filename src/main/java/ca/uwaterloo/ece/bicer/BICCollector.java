@@ -291,9 +291,11 @@ public class BICCollector {
 
 			// Get basic commit info
 			String sha1 =  rev.name() + "";
-			String date = Utils.getStringDateTimeFromCommitTime(rev.getCommitTime());
+			String date = Utils.getStringDateTimeFromCommitTime(rev.getCommitTime()); // GMT time string
 			
 			try {
+				// Note that CommitTime string (date) in GMT was processed as local time (America/Toronto) in previous tool
+				// so parse date string as local time
 				if((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date)).compareTo(endDate)>0)
 					continue;
 			} catch (ParseException e1) {
@@ -447,11 +449,11 @@ public class BICCollector {
 			//verbose = cmd.hasOption("v");
 
 			strStartDate = cmd.getOptionValue("s");
-			startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(strStartDate);
+			startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(strStartDate + " -0000");
 			strEndDate = cmd.getOptionValue("e");
-			endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(strEndDate);
+			endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(strEndDate + " -0000");
 			strLabelEndDate = cmd.getOptionValue("l");
-			labelEndDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(strLabelEndDate);
+			labelEndDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(strLabelEndDate + " -0000");
 
 		} catch (Exception e) {
 			printHelp(options);
