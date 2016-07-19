@@ -91,7 +91,7 @@ public class Labeler {
 		}
 		
 		for(BIChange biChange:biChangesByKey.get(key)){
-			if(biChange.getFixDate().compareTo(lastDateForFixCollection)>0) // if fixDate > lastDateForFixCollection, continue
+			if(biChange.getFixDate().compareTo(lastDateForFixCollection)>=0) // if fixDate >= lastDateForFixCollection (no inclusive for labeling), continue
 				continue;
 			// continue when not startDate < biDate < endDate
 			if(!(startDate.compareTo(biChange.getBIDate()) <= 0 && biChange.getBIDate().compareTo(endDate)<=0))
