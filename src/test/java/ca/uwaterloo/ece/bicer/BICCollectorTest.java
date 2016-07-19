@@ -16,7 +16,7 @@ public class BICCollectorTest {
     	String project="lucene";
     	
     	//String [] args ={"-d","data/exampleBIChanges.txt", "-g", System.getProperty("user.home") + "/git/BICER"};
-    	String [] args ={"-g",System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project + "/git/git",
+    	String [] args ={"-g",System.getProperty("user.home") + "/Documents/ODP/projects/" + project + "/git",
     						// jackrabbit
     						/*"-s", "2007-09-12 00:00:00",
     						"-e", "2009-09-14 23:59:59",
@@ -29,7 +29,7 @@ public class BICCollectorTest {
 			    			/*"-s", "2010-12-18 00:00:00",
 							"-e", "2010-12-20 23:59:59",
 							"-l", "2010-12-20 23:59:59",*/
-    						"-b", System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project + "/" + project + "_bug_reports.txt"};
+    						"-b", System.getProperty("user.home") + "/Documents/ODP/projects/" + project + "/" + project + "_bug_reports.txt"};
     	
     	runner.run(args);
     	

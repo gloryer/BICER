@@ -42,15 +42,14 @@ public class JGitDiffTest {
         
     	Git git;
 		try {
-			git = Git.open( new File( System.getProperty("user.home") + "/Documents/UW/ODP/projects/lucene/git/git") );
+			git = Git.open( new File( System.getProperty("user.home") + "/Documents/ODP/projects/jackrabbit/git/") );
 			
 			Repository repo = git.getRepository();
 			
-			String oldSha1 = "474a02da71bdfc90bf707eaccc2b6af664c8bec6";
-			String newSha1 = "6c29ac3a8fd37a9b2afff7d9cb1d343aa3c5861a";
-			String oldPath = "lucene/src/java/org/apache/lucene/index/DocumentsWriter.java";
-			String path = "lucene/src/java/org/apache/lucene/index/DocumentsWriter.java";		
-				
+			String oldSha1 = "1759c34894b284f26e4dd9caff39e9fe6306229e~1";
+			String newSha1 = "1759c34894b284f26e4dd9caff39e9fe6306229e";
+			String oldPath = "jackrabbit-core/src/main/java/org/apache/jackrabbit/core/query/lucene/AbstractExcerpt.java";
+			String path = "jackrabbit-core/src/main/java/org/apache/jackrabbit/core/query/lucene/AbstractExcerpt.java";	
 			
 			// way 0
 			ObjectId oldId;

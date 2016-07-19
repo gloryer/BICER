@@ -17,21 +17,21 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
 public class ResultValidationTest {
     @Test public void testSomeLibraryMethod() {
     	
-    	String project ="jackrabbit";
-    	String dir = System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project +"/";
+    	String project ="lucene";
+    	String dir = System.getProperty("user.home") + "/Documents/ODP/projects/" + project +"/";
         
-    	String pathForBIChanges = dir + "biChanges.txt";
-    	String pathForBIChangesSanitized = dir + "biChangesSanitized.txt";
+    	String pathForBIChanges = dir + "biChangesBICER.txt";
+    	String pathForBIChangesSanitized = dir + "biChangesBICER.txt";
     	/* BI_SHA1 PATH    BIDATE  FixDAT
     	 * and
     	 * Noisy BI changes
     	 * BI_SHA1 PATH    BIDATE  FixDATE  DUE_TO isAddedLine   line
     	 */
-    	String pathForBIChangesNoiseFiltered =  dir + "biChangesNoiseFiltered.txt"; 
+    	String pathForBIChangesNoiseFiltered =  dir + "biChangesBICERNoiseFiltered.txt"; 
     	//String pathForBIManuallyVerified = dir + project + "BIs.txt";
-    	String pathForBIManuallyVerified = dir + project + "BIsManualIssueCorrected.txt";
+    	String pathForBIManuallyVerified = dir + "biChangesBICERManuallyFiltered.txt";
     	
-    	ArrayList<BIChange> biChanges = loadBIChanges(pathForBIChanges, true);
+    	ArrayList<BIChange> biChanges = loadBIChanges(pathForBIChanges, false);
     	ArrayList<BIChange> biChangesSanitized = loadBIChanges(pathForBIChangesSanitized, false);
     	
     	if(biChanges.size()!=biChangesSanitized.size()){
@@ -50,7 +50,8 @@ public class ResultValidationTest {
     	ArrayList<BIChange> biChangesSanitizedNoiseFiltered = getBIChangesNoiseFiltered( Utils.getLines(pathForBIChangesNoiseFiltered, true));
     	ArrayList<BIChange> identifiedAsNoise = getBIChangesIdentifiedAsNoise(Utils.getLines(pathForBIChangesNoiseFiltered, true));
     	Set<String> biSha1AndPathForAllOriginalBICs = getBISha1AndPathFromBILines(Utils.getLines(pathForBIChanges, true));
-    	Set<String> biSha1AndPathManuallyVerified = getBISha1AndPath(Utils.getLines(pathForBIManuallyVerified, true));
+    	Set<String> biSha1AndPathManuallyVerified = getBISha1AndPathFromBILines(Utils.getLines(pathForBIManuallyVerified, true));
+    	//Set<String> biSha1AndPathManuallyVerified = getBISha1AndPath(Utils.getLines(pathForBIManuallyVerified, true));
     	Set<String> biSha1AndPathManuallyVerifiedNoises = getBISha1AndPath(biSha1AndPathForAllOriginalBICs,biSha1AndPathManuallyVerified);
     	
     	

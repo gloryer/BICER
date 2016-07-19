@@ -14,38 +14,38 @@ import static org.junit.Assert.*;
 public class LabelerTest {
     @Test public void testSomeLibraryMethod() {
     	
-    	String[] luceneTrainingStartDates = {
+    	String[] luceneTrainingStartDates = { // Timezone: GMT
     			"2010-09-17",
-    			"2010-10-16",
-    			"2010-11-15",
-    			"2010-12-15",
+    			"2010-10-17",
+    			"2010-11-16",
+    			"2010-12-16",
     			"2011-01-15",
-    			"2011-02-13",
+    			"2011-02-14",
     			"2011-03-16",
     			"2011-04-15"};
     	
-    	String[] luceneTrainingEndDates = {
+    	String[] luceneTrainingEndDates = { // Timezone: GMT
     			"2010-10-23",
-    			"2010-11-21",
+    			"2010-11-22",
     			"2010-12-22",
     			"2011-01-21",
-    			"2011-02-19",
+    			"2011-02-20",
     			"2011-03-22",
-    			"2011-04-20",
-    			"2011-05-20"
+    			"2011-04-21",
+    			"2011-05-21"
     	};
     	
-    	String[] luceneTestStartDates = {
-    			"2010-11-28",
+    	String[] luceneTestStartDates = { // Timezone: GMT
+    			"2010-11-29",
 				"2010-12-29",
-				"2011-01-27",
-				"2011-02-26",
+				"2011-01-28",
+				"2011-02-27",
 				"2011-03-29",
-				"2011-04-27",
-				"2011-05-27",
+				"2011-04-28",
+				"2011-05-28",
 				"2011-06-27"
     	};
-    	
+    		
     	String[] luceneTestEndDates = {
     			"2010-12-28",
     			"2011-01-27",
@@ -56,15 +56,15 @@ public class LabelerTest {
     			"2011-06-26",
     			"2011-06-29"
     	};
-    	
-    	String luceneEndDateForTestLabelCollection = "2013-01-16 23:59:59";
-    	String path = System.getProperty("user.home") + "/Documents/UW/ODP/projects/lucene/";
+    	 
+    	String luceneEndDateForTestLabelCollection = "2013-01-17 00:00:00 -0000";  // this is not inclusive
+    	String path = System.getProperty("user.home") + "/Documents/ODP/projects/lucene/";
     	String classAttributeName = "500_Buggy?";
     	String positiveLabel = "1";
     	String pathToChangeIDSha1Pair = path + "change_id_sha1_thin_lucene.txt";
     	
     	// no filter
-    	/*generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"", "train",
+    	generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"", "train",
         		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
     	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"", "test",
         		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
@@ -73,7 +73,7 @@ public class LabelerTest {
     	generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"filtered", "train",
         		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");
     	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"filtered", "test",
-    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");*/
+    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");
     	
     	// manually filtered
     	generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"manual", "train",
@@ -175,7 +175,7 @@ public class LabelerTest {
     			"2009-09-14",
     	};
     	
-    	String jackrabbitEndDateForTestLabelCollection = "2013-01-14 23:59:59";
+    	String jackrabbitEndDateForTestLabelCollection = "2013-01-15 00:00:00 -0000"; // this is not inclusive
     	
     	/*path = System.getProperty("user.home") + "/Documents/ODP/projects/jackrabbit/";
     	pathToBIChangesForLabeling = path + "biChangesBICERNoiseFiltered.txt"; // TODO change appropriate
@@ -241,10 +241,11 @@ public class LabelerTest {
     	for(int i=0; i< startDates.length;i++){
     		
     		pathToArff = path + "arffsOriginalWOTestCases/" + i +"/" + dataType+ ".arff";
-    		startDate = startDates[i];
-    		endDate = endDates[i] + " 23:59:59";
-    		if(dataType.equals("train"))
-    			lastDateForFixCollection = testStartDates[i] + " 23:59:59";
+    		startDate = startDates[i] + " 00:00:00 -0000";
+    		endDate = endDates[i] + " 23:59:59 -0000";
+    		if(dataType.equals("train")){
+    			lastDateForFixCollection = testStartDates[i] + " 00:00:00 -0000";
+    		}
     		
     		if(type.equals("manual"))	
     			pathToNewArff = path + "arffsManuallyFilteredWOTestCases/" + i + "/" + dataType+ ".arff";
