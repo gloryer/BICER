@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.Comment;
@@ -364,6 +365,9 @@ public class Utils {
 	public static String getStringDateTimeFromCommitTime(int commitTime){
 		SimpleDateFormat ft =  new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
 		Date commitDate = new Date(commitTime* 1000L);
+		
+		TimeZone GMT = TimeZone.getTimeZone("GMT");
+		ft.setTimeZone(GMT);
 
 		return ft.format(commitDate);
 	}
