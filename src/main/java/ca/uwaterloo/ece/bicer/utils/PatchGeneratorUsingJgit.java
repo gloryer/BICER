@@ -11,10 +11,14 @@ import java.util.List;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.diff.DiffAlgorithm;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RawText;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 public class PatchGeneratorUsingJgit {
 	
@@ -69,7 +73,7 @@ public class PatchGeneratorUsingJgit {
 					DataOutputStream dos=new DataOutputStream(fos);
 					
 					// do diff
-					DiffFormatter df = new DiffFormatter(dos);
+					DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 					df.setRepository(repo);
 					df.setDiffAlgorithm(Utils.diffAlgorithm);
 					df.setDiffComparator(Utils.diffComparator);
@@ -94,6 +98,9 @@ public class PatchGeneratorUsingJgit {
 
 						// do diff
 						diffs = df.scan(parent.getTree(), rev.getTree());
+						
+						String oldSha1 = parent.getName();
+						
 						for (DiffEntry diff : diffs) {
 							
 							String oldPath = diff.getOldPath();
@@ -102,7 +109,23 @@ public class PatchGeneratorUsingJgit {
 							// ignore when no previous revision of a file, Test files, and non-java files.
 							if(oldPath.equals("/dev/null") || newPath.indexOf("Test")>=0  || newPath.indexOf("/test")>=0 || !newPath.endsWith(".java")) continue;
 							
-							df.format(diff);	
+							
+							
+							//df.format(diff);	
+							String sourceAWOComments = Utils.removeComments(Utils.fetchBlob(repo, oldSha1, oldPath));
+							String sourceBWOComments = Utils.removeComments(Utils.fetchBlob(repo, sha1, newPath));
+							
+										
+							DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
+							RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
+							
+							DiffFormatter df2 = new DiffFormatter(dos);
+							df2.setDiffAlgorithm(diffAlgorithm);
+							df2.setDiffComparator(diffComparator);
+							
+							df2.format(Utils.getEditListFromDiff(sourceAWOComments, sourceBWOComments), new RawText(sourceAWOComments.getBytes()), new RawText(sourceBWOComments.getBytes()));
+
+							df2.close();
 						}
 
 					} catch (IOException e) {
