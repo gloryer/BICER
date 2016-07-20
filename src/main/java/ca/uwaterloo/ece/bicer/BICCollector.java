@@ -155,6 +155,7 @@ public class BICCollector {
 							e.printStackTrace();
 						}
 						df.close();
+						break;
 					}
 				}
 			}
