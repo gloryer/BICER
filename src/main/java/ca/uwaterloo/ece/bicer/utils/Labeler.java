@@ -122,19 +122,33 @@ public class Labeler {
 			HashMap<String, ArrayList<BIChange>> biChangesByKey) {
 		
 		ArrayList<String> validChanges = new ArrayList<String>();
-		
-		for(String key:biChangesByKey.keySet()){
-			for(BIChange biChange:biChangesByKey.get(key)){
-				if(biChange.getFixDate().compareTo(lastDateForFixCollection)>0) // if fixDate is earlier than lastDateForFixCollection
-					continue;
-				if(!(startDate.compareTo(biChange.getBIDate()) <= 0 && 0 >= biChange.getBIDate().compareTo(endDate)))
-					continue;
-				
-				if(!validChanges.contains(key))
-					validChanges.add(key);
-				
-			}	
-		}
+		try {
+			Date sDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(startDate);  // GMT
+			Date eDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(endDate); // GMT
+			Date lDateForFixCollection = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z").parse(lastDateForFixCollection); // GMT
+			
+			for(String key:biChangesByKey.keySet()){
+				for(BIChange biChange:biChangesByKey.get(key)){
+					
+						Date biDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(biChange.getBIDate());
+						Date fixDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(biChange.getFixDate()); // load Date in local timezone
+						
+						if(fixDate.compareTo(lDateForFixCollection)>=0) // if fixDate is earlier than lastDateForFixCollection
+							continue;
+						if(!(sDate.compareTo(biDate) <= 0 && 0 >= biDate.compareTo(eDate)))
+							continue;
+						
+						if(!validChanges.contains(key))
+							validChanges.add(key);
+					
+					
+					
+				}	
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // load Date in local timezone
 		return validChanges;
 	}
 
