@@ -82,6 +82,14 @@ public class BIChange implements Comparable<BIChange>{
 		this.path = path;
 	}
 	
+	public void setBIDate(String date){
+		this.BIDate = date;
+	}
+	
+	public void setFixDate(String date){
+		this.FixDate = date;
+	}
+	
 	public void setFilteredDueTo(String filterName) {
 		filteredDueTo = filterName;
 	}
