@@ -187,6 +187,7 @@ public class BICCollector {
 		
 		String[] arrOrigFileSource = fileSource.split("\n");
 		for(int lineIdx:arrIndicesInOriginalFileSource){
+			if(arrOrigFileSource.length<=lineIdx) continue; // split("\n") ignore last empty lines. So, lineIdx can be greater the array length. Ignore this case
 			String addedlineInFixCommit = arrOrigFileSource[lineIdx].trim();
 			ArrayList<DeletedLineInCommits> lstDeletedLines = mapDeletedLines.get(addedlineInFixCommit);
 			
