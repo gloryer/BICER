@@ -20,10 +20,10 @@ public class BiChangeDateReplaceTest {
     @Test public void testSomeLibraryMethod() {
     	
     	String project ="lucene";
-    	String dir = System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project +"/";
+    	String dir = System.getProperty("user.home") + "/Documents/ODP/projects/" + project +"/";
         
     	String pathForBIChangeDateSource = dir + "biChangesBICER.txt";
-    	String pathForBIChangesDateTarget = dir + "biChangesBICERManuallyFiltered_beforeTimeZoneIssueSolved.txt";
+    	String pathForBIChangesDateTarget = dir + "biChangesBICERManuallyFiltered_beforeTimezoneIssueSolved.txt";
     	String pathForBIChangesDateToSave = dir + "biChangesBICERManuallyFiltered.txt";
     	
     	ArrayList<BIChange> biChangesDateSource = loadBIChanges(pathForBIChangeDateSource, false);

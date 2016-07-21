@@ -64,7 +64,7 @@ public class LabelerTest {
     	String pathToChangeIDSha1Pair = path + "change_id_sha1_thin_lucene.txt";
     	
     	// no filter
-    	generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"", "train",
+    	/*generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"", "train",
         		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
     	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"", "test",
         		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
@@ -81,7 +81,7 @@ public class LabelerTest {
     	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"manual", "test",
         		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt");
     	
-    	
+    	*/
     	
     	/*for(int i=0; i<luceneTrainingStartDates.length;i++){
     		
@@ -124,110 +124,83 @@ public class LabelerTest {
     	}*/
     	
     	String[] jackrabbitTrainingStartDates = {
-    			"2007-09-12",
-    			"2007-11-13",
+    			"2007-09-13",
+    			"2007-11-12",
     			"2008-01-11",
-    			"2008-03-10",
-    			"2008-05-12",
-    			"2008-07-16",
-    			"2008-09-11",
+    			"2008-03-11",
+    			"2008-05-10",
+    			"2008-07-09",
+    			"2008-09-07",
     			"2008-11-06",
-    			"2009-01-06",
-    			"2009-03-10",
+    			"2009-01-05",
+    			"2009-03-06",
     			};
     	
     	String[] jackrabbitTrainingEndDates = {
-    			"2007-11-23",
-    			"2008-01-22",
-    			"2008-03-21",
+    			"2007-11-24",
+    			"2008-01-23",
+    			"2008-03-23",
     			"2008-05-22",
     			"2008-07-21",
     			"2008-09-19",
     			"2008-11-18",
-    			"2009-01-15",
+    			"2009-01-17",
     			"2009-03-18",
-    			"2009-05-15",
+    			"2009-05-17",
     	};
     	
     	String[] jackrabbitTestStartDates = {
     			"2008-02-06",
-    			"2008-04-07",
+    			"2008-04-06",
     			"2008-06-05",
     			"2008-08-04",
     			"2008-10-03",
     			"2008-12-02",
-    			"2009-02-03",
+    			"2009-01-31",
     			"2009-04-01",
-    			"2009-06-02",
+    			"2009-05-31",
     			"2009-07-30",
     	};
     	
     	String[] jackrabbitTestEndDates = {
-    			"2008-04-04",
-    			"2008-05-28",
-    			"2008-07-31",
+    			"2008-04-05",
+    			"2008-06-04",
+    			"2008-08-03",
     			"2008-10-02",
     			"2008-12-01",
     			"2009-01-30",
     			"2009-03-31",
-    			"2009-05-29",
+    			"2009-05-30",
     			"2009-07-29",
-    			"2009-09-14",
+    			"2009-09-27",
     	};
     	
     	String jackrabbitEndDateForTestLabelCollection = "2013-01-15 00:00:00 -0000"; // this is not inclusive
     	
-    	/*path = System.getProperty("user.home") + "/Documents/ODP/projects/jackrabbit/";
-    	pathToBIChangesForLabeling = path + "biChangesBICERNoiseFiltered.txt"; // TODO change appropriate
+    	path = System.getProperty("user.home") + "/Documents/ODP/projects/jackrabbit/";
     	classAttributeName = "500_Buggy?";
     	positiveLabel = "1";
     	pathToChangeIDSha1Pair = path + "change_id_sha1_thin_jackrabbit.txt";
     	
-    	//manual = true;
+    	// no filter
+    	generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"", "train",
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
+    	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"", "test",
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
     	
-    	if(manual){
-    		pathToBIChangesForLabeling = path + "jackrabbitBIsManualIssueCorrected.txt";
-    	}*/
-
-    	/*for(int i=0; i<jackrabbitTrainingStartDates.length;i++){
-    		
-    		pathToArff = path + "arffsOriginalWOTestCases/" + i +"/train.arff";
-    		startDate = jackrabbitTrainingStartDates[i];
-    		endDate = jackrabbitTrainingEndDates[i] + "23:59:59";
-    		lastDateForFixCollection = jackrabbitTestStartDates[i];
-    		if(manual)	
-    			pathToNewArff = path + "arffsManyallyCleaned/" + i + "/train.arff";
-    		else if(filtered)
-    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases/" + i + "/train.arff";
-    		else
-    			pathToNewArff = path + "arffsCleanedWOTestCases/" + i + "/train.arff";
-    		
-    		System.out.println("\n\nData index: " + i);
-    		
-    		Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
-    				pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
-    	}
+    	// BICER filter
+    	generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"filtered", "train",
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");
+    	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"filtered", "test",
+    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");
     	
-    	// Jackrabbit test sets
-    	lastDateForFixCollection = jackrabbitEndDateForTestLabelCollection;
-    	for(int i=0; i<jackrabbitTestStartDates.length;i++){
-		
-			pathToArff = path + "arffsOriginalWOTestCases/" + i +"/test.arff";
-			startDate = jackrabbitTestStartDates[i];
-			endDate = jackrabbitTestEndDates[i] + "23:59:59";
-			if(manual)	
-    			pathToNewArff = path + "arffsManyallyCleaned/" + i + "/test.arff";
-			else if(filtered)
-    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases/" + i + "/test.arff";
-			else
-    			pathToNewArff = path + "arffsCleanedWOTestCases/" + i + "/test.arff";
-			
-			System.out.println("\n\nData index: " + i);
-			
-			Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
-					pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
-    	}*/
-    	//assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
+    	// manually filtered
+    	generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"manual", "train",
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt");
+    	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"manual", "test",
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt");
+    	
+    	
     }
     
     private void generateArffs(String path,String[] startDates,String[] endDates,String[] testStartDates,String lastDateForFixCollection,String type, String dataType,

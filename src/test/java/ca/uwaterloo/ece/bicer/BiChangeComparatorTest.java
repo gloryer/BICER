@@ -19,16 +19,18 @@ import ca.uwaterloo.ece.bicer.utils.Utils;
 public class BiChangeComparatorTest {
     @Test public void testSomeLibraryMethod() {
     	
-    	String project ="lucene";
-    	String dir = System.getProperty("user.home") + "/Documents/UW/ODP/projects/" + project +"/";
+    	String project ="jackrabbit";
+    	String dir = System.getProperty("user.home") + "/Documents/ODP/projects/" + project +"/";
         
     	String pathForBIChangesBICER = dir + "biChangesBICER.txt";
     	String pathForBIChangesSanitized = dir + "biChangesBICER_partial_manual.txt"; // for reuse labels from oldtool "biChangesOldToolAllOldPathCorrectedSanitized.txt";
     	String pathForBIChangesManualSanitized = dir + "biChangesBICER_partial_manual_no_noise.txt"; // for labeling: real bi lines from biChangesOldToolAllSanitized.txt
+    	String pathForBIChangesActualNoisesToolFound = dir + "biChangesBICERActualNoisesToolFound.txt"; // Actual Noises tool found
 
     	ArrayList<BIChange> biChangesBICER = loadBIChanges(pathForBIChangesBICER, false);
     	ArrayList<BIChange> biChangesSanitized = loadBIChanges(pathForBIChangesSanitized, false);
     	ArrayList<BIChange> biChangesManualSanitized = loadBIChanges(pathForBIChangesManualSanitized, false);
+    	ArrayList<BIChange> biChangesActualNoisesToolFound = loadBIChanges(pathForBIChangesActualNoisesToolFound, false);
     	
     	ArrayList<BIChange> biChangesBICERNotExistInSenitized = new ArrayList<BIChange>();
     	ArrayList<BIChange> biChangesCoEixst = new ArrayList<BIChange>();
@@ -60,6 +62,19 @@ public class BiChangeComparatorTest {
     		}
     	}
     	
+    	HashMap<String,ArrayList<BIChange>> mapBIChangesActualNoisesToolFound= new HashMap<String,ArrayList<BIChange>>(); // key fixSha1 + path + lineNum + line
+    	
+    	for(BIChange biChange:biChangesActualNoisesToolFound){
+    		String key = biChange.getFixSha1() + biChange.getPath()+biChange.getLineNum() + ":" + biChange.getLineNumInPrevFixRev() + biChange.getIsAddedLine();// + biChange.getLine().trim();
+    		if(!mapBIChangesActualNoisesToolFound.containsKey(key)){
+    			ArrayList<BIChange> arrBIChange = new ArrayList<BIChange>();
+    			arrBIChange.add(biChange);
+    			mapBIChangesActualNoisesToolFound.put(key, arrBIChange);
+    		} else{
+    			mapBIChangesActualNoisesToolFound.get(key).add(biChange);
+    		}
+    	}
+    	
     	// labeling
     	for(BIChange biChange:biChangesBICER){
     		
@@ -68,10 +83,12 @@ public class BiChangeComparatorTest {
     		if(mapBIChangesSanitized.containsKey(key)){
     			ArrayList<BIChange> arrBIChange = mapBIChangesSanitized.get(key);
     			
-    			if(mapBIChangesManualSanitized.containsKey(key))
+    			if(mapBIChangesManualSanitized.containsKey(key) &&!mapBIChangesActualNoisesToolFound.containsKey(key))
     				biChange.setIsNoise(false);
     			else
     				biChange.setIsNoise(true);
+    			
+    			
     			
     			biChangesCoEixst.add(biChange);
     			if(arrBIChange.size()>1)

@@ -46,10 +46,10 @@ public class JGitDiffTest {
 			
 			Repository repo = git.getRepository();
 			
-			String oldSha1 = "1759c34894b284f26e4dd9caff39e9fe6306229e~1";
-			String newSha1 = "1759c34894b284f26e4dd9caff39e9fe6306229e";
-			String oldPath = "jackrabbit-core/src/main/java/org/apache/jackrabbit/core/query/lucene/AbstractExcerpt.java";
-			String path = "jackrabbit-core/src/main/java/org/apache/jackrabbit/core/query/lucene/AbstractExcerpt.java";	
+			String oldSha1 = "6cbc271530d933d4c9910537fd8a83f089281ae0~1";
+			String newSha1 = "6cbc271530d933d4c9910537fd8a83f089281ae0";
+			String oldPath = "jackrabbit-ocm/src/main/java/org/apache/jackrabbit/ocm/manager/collectionconverter/impl/DefaultCollectionConverterImpl.java";
+			String path = "jackrabbit-ocm/src/main/java/org/apache/jackrabbit/ocm/manager/collectionconverter/impl/DefaultCollectionConverterImpl.java";	
 			
 			// way 0
 			ObjectId oldId;
@@ -148,7 +148,7 @@ public class JGitDiffTest {
 			String sourceBWOComments = Utils.removeComments(Utils.fetchBlob(repo, newSha1, path));
 			
 						
-			DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.HISTOGRAM);
+			DiffAlgorithm diffAlgorithm = DiffAlgorithm.getAlgorithm(DiffAlgorithm.SupportedAlgorithm.MYERS);
 			RawTextComparator diffComparator = RawTextComparator.WS_IGNORE_ALL;
 			
 			DiffFormatter df2 = new DiffFormatter(System.out);
@@ -157,6 +157,12 @@ public class JGitDiffTest {
 			
 			df2.format(Utils.getEditListFromDiff(sourceA, sourceB), new RawText(sourceA.getBytes()), new RawText(sourceB.getBytes()));
 			df2.format(Utils.getEditListFromDiff(sourceAWOComments, sourceBWOComments), new RawText(sourceAWOComments.getBytes()), new RawText(sourceBWOComments.getBytes()));
+			
+			String a = "a\nb\n\n";
+			String b = "a\n\nb\n";
+			
+			df2.format(Utils.getEditListFromDiff(a, b), new RawText(a.getBytes()), new RawText(b.getBytes()));
+			df2.format(Utils.getEditListFromDiff(b, a), new RawText(b.getBytes()), new RawText(a.getBytes()));
 			
 			df2.close();
 

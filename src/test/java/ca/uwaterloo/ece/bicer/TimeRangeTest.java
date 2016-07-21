@@ -30,16 +30,16 @@ public class TimeRangeTest {
 			
 			//TimeZone here = TimeZone.getTimeZone("America/Toronto");
 			//formatter.setTimeZone(here);
-			Date tStartDate = formatterGMT.parse("2010-09-17 00:00:00 GMT");
-			long trainDuration = (long)Math.round(365 * 0.1); // year
-			long gap = (long)Math.round(365 * 0.1); // year
-			long gapBetweenTrainingStartNTestStart = (long)Math.round(365 * 0.2);
-			int updateTime = 30; // days
+			Date tStartDate = formatterGMT.parse("2007-09-13 00:00:00 GMT");
+			long trainDuration = (long)Math.round(365 * 0.2); // year
+			//long gap = (long)Math.round(365 * 0.1); // year
+			long gapBetweenTrainingStartNTestStart = (long)Math.round(365 * 0.4); //trainDuration + gap
+			int updateTime = 60; // days
 
 			
 			
 
-			for(int i=0; i<8; i++){
+			for(int i=0; i<10; i++){
 				Date trainStartDate = new Date(tStartDate.getTime() + (milDay * (i*updateTime)));
 				System.out.println("\ntrainStartDate: " + formatter.format(trainStartDate) + " " + formatterGMT.format(trainStartDate));
 				

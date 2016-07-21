@@ -13,18 +13,18 @@ public class BICCollectorTest {
         
     	BICCollector runner = new BICCollector();
     	
-    	String project="lucene";
+    	String project="jackrabbit";
     	
     	//String [] args ={"-d","data/exampleBIChanges.txt", "-g", System.getProperty("user.home") + "/git/BICER"};
     	String [] args ={"-g",System.getProperty("user.home") + "/Documents/ODP/projects/" + project + "/git",
     						// jackrabbit
-    						/*"-s", "2007-09-12 00:00:00",
+    						"-s", "2007-09-12 00:00:00",
     						"-e", "2009-09-14 23:59:59",
-    						"-l", "2013-01-14 23:59:59",*/
+    						"-l", "2013-01-14 23:59:59",
     						//lucene
-    						"-s", "2010-09-17 00:00:00",
+    						/*"-s", "2010-09-17 00:00:00",
     						"-e", "2011-06-29 23:59:59",
-    						"-l", "2013-01-16 23:59:59",
+    						"-l", "2013-01-16 23:59:59",*/
     						//test
 			    			/*"-s", "2010-12-18 00:00:00",
 							"-e", "2010-12-20 23:59:59",
