@@ -45,6 +45,8 @@ public class BICCollector {
 	private String gitURI;
 	private String pathToBuggyIDs;
 	private boolean help;
+	private boolean considerTestCases;
+	private boolean unTrackDeletedBIlines;
 	//private boolean verbose;
 	private String strStartDate;
 	private String strEndDate;
@@ -77,7 +79,9 @@ public class BICCollector {
 			repo = git.getRepository();
 
 			// (3) get deleted lines from commits. This data are used to identify BI lines that are only deleted and are in INSERT hunks in bug-fixing commits.
-			HashMap<String,ArrayList<DeletedLineInCommits>> mapDeletedLines = getDeletedLinesInCommits(commits);
+			HashMap<String,ArrayList<DeletedLineInCommits>> mapDeletedLines = null;
+			if(!unTrackDeletedBIlines)
+				mapDeletedLines = getDeletedLinesInCommits(commits);
 
 			// (4) find bug-fixing commits and get BI lines
 			ArrayList<BIChange> lstBIChanges = new ArrayList<BIChange>();
@@ -117,8 +121,10 @@ public class BICCollector {
 								String newPath = diff.getNewPath();
 
 								// ignore when no previous revision of a file, Test files, and non-java files.
-								if(oldPath.equals("/dev/null") || newPath.indexOf("Test")>=0  || newPath.indexOf("/test")>=0 || !newPath.endsWith(".java")) continue;
+								if(oldPath.equals("/dev/null") || newPath.indexOf("Test")>=0  || !newPath.endsWith(".java")) continue;
 
+								if(!considerTestCases && newPath.indexOf("/test")>=0) continue;
+								
 								String id =  rev.name() + "";
 
 								// get preFixSource and fixSource without comments
@@ -149,7 +155,8 @@ public class BICCollector {
 
 								// get BI commit from lines in lstIdxOfOnlyInsteredLines
 								lstBIChanges.addAll(getBIChangesFromBILineIndices(id,rev.getCommitTime(), newPath, oldPath, prevFileSource,lstIdxOfDeletedLinesInPrevFixFile));
-								lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,fileSource,lstIdxOfOnlyInsteredLinesInFixFile,oldPath,newPath));
+								if(!unTrackDeletedBIlines)
+									lstBIChanges.addAll(getBIChangesFromDeletedBILine(id,rev.getCommitTime(),mapDeletedLines,fileSource,lstIdxOfOnlyInsteredLinesInFixFile,oldPath,newPath));
 							}
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -317,7 +324,9 @@ public class BICCollector {
 					String newPath = diff.getNewPath();
 
 					// Skip test case files
-					if(newPath.indexOf("Test")>=0 || newPath.indexOf("/test")>=0 || !newPath.endsWith(".java")) continue;
+					if(newPath.indexOf("Test")>=0 || !newPath.endsWith(".java")) continue;
+					
+					if(!considerTestCases && newPath.indexOf("/test")>=0) continue;
 					
 					// Do diff on files without comments to only consider code lines
 					String prevfileSource=Utils.removeComments(Utils.fetchBlob(repo, sha1 +  "~1", oldPath));
@@ -423,6 +432,14 @@ public class BICCollector {
 				.argName("Label End date")
 				.required()
 				.build());
+		
+		options.addOption(Option.builder("t")
+				.desc("Consider test cases")
+				.build());
+		
+		options.addOption(Option.builder("u")
+				.desc("Do not track deleted BI lines")
+				.build());
 
 		options.addOption(Option.builder("h").longOpt("help")
 				.desc("Help")
@@ -448,6 +465,8 @@ public class BICCollector {
 			pathToBuggyIDs = cmd.getOptionValue("b");
 
 			help = cmd.hasOption("h");
+			considerTestCases = cmd.hasOption("t");
+			unTrackDeletedBIlines = cmd.hasOption("u");
 			//verbose = cmd.hasOption("v");
 
 			strStartDate = cmd.getOptionValue("s");
