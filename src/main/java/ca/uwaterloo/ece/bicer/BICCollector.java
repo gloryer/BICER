@@ -69,9 +69,11 @@ public class BICCollector {
 			}
 
 			// (1) load BugsIDs
-			bugIDs = Utils.getLines(pathToBuggyIDs, false);
-
-			String bugIDPreFix = bugIDs.get(0).split("-")[0] + "-";
+			String bugIDPreFix="";
+			if(pathToBuggyIDs!=null){
+				bugIDs = Utils.getLines(pathToBuggyIDs, false);
+				bugIDPreFix = bugIDs.get(0).split("-")[0] + "-";
+			}
 
 			// (2) get commits between the start and end dates
 			ArrayList<RevCommit> commits = getRevCommits();
@@ -89,11 +91,18 @@ public class BICCollector {
 				String message = rev.getFullMessage();
 
 				// Create matcher on file
-				Pattern pattern = Pattern.compile(bugIDPreFix + "\\d+");
+				Pattern pattern=null;
+				
+				if(pathToBuggyIDs!=null){
+					pattern = Pattern.compile(bugIDPreFix + "\\d+");
+				}else{
+					pattern = Pattern.compile("fix|bug",Pattern.CASE_INSENSITIVE);
+				}
+				
 				Matcher matcher = pattern.matcher(message);
 
 				while(matcher.find()){
-					if(bugIDs.contains(matcher.group(0))){
+					if(pathToBuggyIDs==null || (bugIDs!=null && bugIDs.contains(matcher.group(0)))){
 
 						// Now it's a bug-fixing commit!
 
@@ -462,7 +471,8 @@ public class BICCollector {
 			CommandLine cmd = parser.parse(options, args);
 
 			gitURI = cmd.getOptionValue("g");
-			pathToBuggyIDs = cmd.getOptionValue("b");
+			if(cmd.getOptionValue("b")!=null)
+				pathToBuggyIDs = cmd.getOptionValue("b");
 
 			help = cmd.hasOption("h");
 			considerTestCases = cmd.hasOption("t");
