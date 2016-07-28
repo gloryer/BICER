@@ -123,6 +123,10 @@ public class PatchGeneratorUsingJgit {
 							df2.setDiffAlgorithm(diffAlgorithm);
 							df2.setDiffComparator(diffComparator);
 							
+							dos.write(("\n a: " + oldPath).getBytes());
+							dos.write(("\n b: " + newPath).getBytes());
+							dos.write("\n\n".getBytes());
+							
 							df2.format(Utils.getEditListFromDiff(sourceAWOComments, sourceBWOComments), new RawText(sourceAWOComments.getBytes()), new RawText(sourceBWOComments.getBytes()));
 
 							df2.close();
