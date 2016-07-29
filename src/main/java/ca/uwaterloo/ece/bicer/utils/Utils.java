@@ -47,6 +47,9 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
 import weka.core.Instances;
+import weka.filters.Filter;
+import weka.filters.unsupervised.attribute.Remove;
+import weka.filters.unsupervised.instance.RemoveRange;
 
 public class Utils {
 	static public ArrayList<String> getLines(String file,boolean removeHeader){
@@ -495,5 +498,29 @@ public class Utils {
 		}
 
 		return instances;
+	}
+	
+	/**
+	 * Get instances by removing specific instances
+	 * @param instances
+	 * @param instance indices (e.g., 1,3,4) first index is 1
+	 * @param option for invert selection
+	 * @return selected instances
+	 */
+	static public Instances getInstancesByRemovingSpecificInstances(Instances instances,String instanceIndices,boolean invertSelection){
+		Instances newInstances = null;
+
+		RemoveRange instFilter = new RemoveRange();
+		instFilter.setInstancesIndices(instanceIndices);
+		instFilter.setInvertSelection(invertSelection);
+
+		try {
+			instFilter.setInputFormat(instances);
+			newInstances = Filter.useFilter(instances, instFilter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return newInstances;
 	}
 }

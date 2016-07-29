@@ -62,32 +62,32 @@ public class LabelerTest {
     	String classAttributeName = "500_Buggy?";
     	String positiveLabel = "1";
     	String pathToChangeIDSha1Pair = path + "change_id_sha1_thin_lucene.txt";
+    	String pathToChangePatchSize = path + "changesWithPatchSize.txt";
+    	int patchSizeCutoffForDeletedLines = 5;
     	
     	// no filter
-    	//generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"wTestCases", "train",
-		//classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERWithTestCases.txt");
-    	//generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"wTestCases", "test",
-		//classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERWithTestCases.txt");
-    	
+    	/*generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"wTestCases", "train",
+    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERWithTestCases.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
+    	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"wTestCases", "test",
+    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERWithTestCases.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
+    	*/
     	/*generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"", "train",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"", "test",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	
     	// BICER filter
     	generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"filtered", "train",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"filtered", "test",
-    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");
+    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	
     	// manually filtered
     	generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"manual", "train",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt");
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"manual", "test",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt");
-    	
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	*/
-    	
     	/*for(int i=0; i<luceneTrainingStartDates.length;i++){
     		
     		pathToArff = path + "arffsOriginalWOTestCases/" + i +"/train.arff";
@@ -186,35 +186,38 @@ public class LabelerTest {
     	classAttributeName = "500_Buggy?";
     	positiveLabel = "1";
     	pathToChangeIDSha1Pair = path + "change_id_sha1_thin_jackrabbit.txt";
+    	pathToChangePatchSize = path + "changesWithPatchSize.txt";
+    	patchSizeCutoffForDeletedLines = 5;
     	
     	// no filter
-    	generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"wTestCases", "train",
+    	/*generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"wTestCases", "train",
 		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERWithTestCases.txt");
     	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"wTestCases", "test",
 		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERWithTestCases.txt");
-    	
-    	/*generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"", "train",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
+    	*/
+    	generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"", "train",
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"", "test",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt");
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	
     	// BICER filter
     	generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"filtered", "train",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"filtered", "test",
-    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt");
+    			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	
     	// manually filtered
     	generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"manual", "train",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt");
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"manual", "test",
-        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt");
-    	*/
+        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
+    	
     	
     }
     
     private void generateArffs(String path,String[] startDates,String[] endDates,String[] testStartDates,String lastDateForFixCollection,String type, String dataType,
-    		String classAttributeName,String positiveLabel, String pathToChangeIDSha1Pair,String pathToBIChangesForLabeling){
+    		String classAttributeName,String positiveLabel, String pathToChangeIDSha1Pair,String pathToBIChangesForLabeling,String pathToPatchSize,
+    		int patchSizeCutoffForDeletedLines){
     	
     	String pathToArff;
     	String startDate;
@@ -233,13 +236,13 @@ public class LabelerTest {
     		}
     		
     		if(type.equals("manual"))	
-    			pathToNewArff = path + "arffsManuallyFilteredWOTestCases/" + i + "/" + dataType+ ".arff";
+    			pathToNewArff = path + "arffsManuallyFilteredWOTestCases_" + patchSizeCutoffForDeletedLines + "/" + i + "/" + dataType+ ".arff";
     		else if(type.equals("filtered"))
-    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases/" + i + "/" + dataType+ ".arff";
+    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases_" + patchSizeCutoffForDeletedLines + "/" + i + "/" + dataType+ ".arff";
     		else if(type.equals("wTestCases"))
-    			pathToNewArff = path + "arffsCleanedWTestCases/" + i + "/" + dataType+ ".arff";
+    			pathToNewArff = path + "arffsCleanedWTestCases_" + patchSizeCutoffForDeletedLines + "/" + i + "/" + dataType+ ".arff";
     		else
-    			pathToNewArff = path + "arffsCleanedWOTestCases/" + i + "/" + dataType+ ".arff";
+    			pathToNewArff = path + "arffsCleanedWOTestCases_" + patchSizeCutoffForDeletedLines + "/" + i + "/" + dataType+ ".arff";
     		
     		System.out.println("\n\nData index: " + i);
     		
@@ -251,7 +254,7 @@ public class LabelerTest {
     		System.out.println("Labeling data source: " + pathToBIChangesForLabeling);
     		
     		Labeler.relabelArff(pathToArff, classAttributeName, positiveLabel, pathToChangeIDSha1Pair,
-    				pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection);
+    				pathToBIChangesForLabeling, pathToNewArff, startDate, endDate, lastDateForFixCollection,pathToPatchSize,patchSizeCutoffForDeletedLines);
     	}
     }
 }
