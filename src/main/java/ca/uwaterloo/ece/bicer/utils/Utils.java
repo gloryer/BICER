@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -45,6 +46,7 @@ import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import ca.uwaterloo.ece.bicer.data.BIChange;
+import weka.core.Instances;
 
 public class Utils {
 	static public ArrayList<String> getLines(String file,boolean removeHeader){
@@ -468,5 +470,30 @@ public class Utils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
+	}
+	
+	/**
+	 * Load Instances from arff file. Last attribute will be set as class attribute
+	 * @param path arff file path
+	 * @return Instances
+	 */
+	public static Instances loadArff(String path,String classAttributeName){
+		Instances instances=null;
+		BufferedReader reader;
+		try {
+			reader = new BufferedReader(new FileReader(path));
+			instances = new Instances(reader);
+			reader.close();
+			instances.setClassIndex(instances.attribute(classAttributeName).index());
+		} catch (NullPointerException e) {
+			System.err.println("Class label name, " + classAttributeName + ", does not exist! Please, check if the label name is correct.");
+			instances = null;
+		} catch (FileNotFoundException e) {
+			System.err.println("Data file, " +path + ", does not exist. Please, check the path again!");
+		} catch (IOException e) {
+			System.err.println("I/O error! Please, try again!");
+		}
+
+		return instances;
 	}
 }

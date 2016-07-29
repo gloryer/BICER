@@ -22,7 +22,7 @@ public class Labeler {
 									String startDate,String endDate,String lastDateForFixCollection){
 		
 		// load arff
-		Instances instances = loadArff(pathToArff, classAttributeName);
+		Instances instances = Utils.loadArff(pathToArff, classAttributeName);
 		
 		// load changd_id and sha1 pair
 		HashMap<String,String> sha1sbyChangeIDs = getSha1sByChangeIDs(pathToChangeIDSha1Pair);
@@ -152,7 +152,7 @@ public class Labeler {
 		return validChanges;
 	}
 
-	private static HashMap<String, String> getSha1sByChangeIDs(String pathToChangeIDSha1Pair) {
+	public static HashMap<String, String> getSha1sByChangeIDs(String pathToChangeIDSha1Pair) {
 		
 		HashMap<String, String> sha1sByChangeIDs = new HashMap<String, String>();
 		
@@ -167,7 +167,7 @@ public class Labeler {
 		return sha1sByChangeIDs;
 	}
 
-	private static HashMap<String,ArrayList<BIChange>> getHashMapForBIChangesByKey(ArrayList<BIChange> biChanges) {
+	public static HashMap<String,ArrayList<BIChange>> getHashMapForBIChangesByKey(ArrayList<BIChange> biChanges) {
 		
 		HashMap<String,ArrayList<BIChange>> biChangesByKey = new HashMap<String,ArrayList<BIChange>>(); // key: biSha1+biPath
 		
@@ -185,30 +185,4 @@ public class Labeler {
 		
 		return biChangesByKey;
 	}
-
-	/**
-	 * Load Instances from arff file. Last attribute will be set as class attribute
-	 * @param path arff file path
-	 * @return Instances
-	 */
-	public static Instances loadArff(String path,String classAttributeName){
-		Instances instances=null;
-		BufferedReader reader;
-		try {
-			reader = new BufferedReader(new FileReader(path));
-			instances = new Instances(reader);
-			reader.close();
-			instances.setClassIndex(instances.attribute(classAttributeName).index());
-		} catch (NullPointerException e) {
-			System.err.println("Class label name, " + classAttributeName + ", does not exist! Please, check if the label name is correct.");
-			instances = null;
-		} catch (FileNotFoundException e) {
-			System.err.println("Data file, " +path + ", does not exist. Please, check the path again!");
-		} catch (IOException e) {
-			System.err.println("I/O error! Please, try again!");
-		}
-
-		return instances;
-	}
-
 }
