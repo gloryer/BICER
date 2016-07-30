@@ -76,12 +76,14 @@ public class Labeler {
 			
 			//System.exit(0);
 		}
+
+		String arffRelation = instances.relationName();
 		
 		instances = Utils.getInstancesByRemovingSpecificInstances(instances, instancesToBeDeleted, false);
 		
 		ArrayList<String> lines = new ArrayList<String>();
 		
-		lines.add(Instances.ARFF_RELATION + " " + instances.relationName());
+		lines.add(Instances.ARFF_RELATION + " " + arffRelation);
 		
 		for (int i = 0; i < instances.numAttributes(); i++) {
 			lines.add(instances.attribute(i).toString());
