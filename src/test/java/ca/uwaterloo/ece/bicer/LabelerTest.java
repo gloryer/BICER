@@ -58,7 +58,7 @@ public class LabelerTest {
     	};
     	 
     	String luceneEndDateForTestLabelCollection = "2013-01-17 00:00:00 -0000";  // this is not inclusive
-    	String path = System.getProperty("user.home") + "/Documents/ODP/projects/lucene/";
+    	String path = System.getProperty("user.home") + "/Documents/UW/ODP/projects/lucene/";
     	String classAttributeName = "500_Buggy?";
     	String positiveLabel = "1";
     	String pathToChangeIDSha1Pair = path + "change_id_sha1_thin_lucene.txt";
@@ -70,13 +70,13 @@ public class LabelerTest {
     	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"wTestCases", "test",
     			classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERWithTestCases.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
     	*/
-    	int[] sizes = {5,10,20,100};
+    	int[] sizes ={-1, 5,10,20,50,100,200};
     	for(int patchSizeCutoffForDeletedLines:sizes){
 	    	generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"", "train",
 	        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
 	    	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"", "test",
 	        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
-	    	
+	    /*	
 	    	// BICER filter
 	    	generateArffs(path,luceneTrainingStartDates,luceneTrainingEndDates,luceneTestStartDates,luceneEndDateForTestLabelCollection,"filtered", "train",
 	        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERNoiseFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
@@ -88,6 +88,7 @@ public class LabelerTest {
 	        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
 	    	generateArffs(path,luceneTestStartDates,luceneTestEndDates,null,luceneEndDateForTestLabelCollection,"manual", "test",
 	        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
+    	*/
     	}
     	/*for(int i=0; i<luceneTrainingStartDates.length;i++){
     		
@@ -183,7 +184,7 @@ public class LabelerTest {
     	
     	String jackrabbitEndDateForTestLabelCollection = "2013-01-15 00:00:00 -0000"; // this is not inclusive
     	
-    	path = System.getProperty("user.home") + "/Documents/ODP/projects/jackrabbit/";
+    	path = System.getProperty("user.home") + "/Documents/UW/ODP/projects/jackrabbit/";
     	classAttributeName = "500_Buggy?";
     	positiveLabel = "1";
     	pathToChangeIDSha1Pair = path + "change_id_sha1_thin_jackrabbit.txt";
@@ -196,7 +197,7 @@ public class LabelerTest {
     	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"wTestCases", "test",
 		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERWithTestCases.txt");
     	*/
-    	for(int patchSizeCutoffForDeletedLines:sizes){
+    	/*for(int patchSizeCutoffForDeletedLines:sizes){
 	    	generateArffs(path,jackrabbitTrainingStartDates,jackrabbitTrainingEndDates,jackrabbitTestStartDates,jackrabbitEndDateForTestLabelCollection,"", "train",
 	        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICER.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
 	    	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"", "test",
@@ -213,7 +214,8 @@ public class LabelerTest {
 	        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
 	    	generateArffs(path,jackrabbitTestStartDates,jackrabbitTestEndDates,null,jackrabbitEndDateForTestLabelCollection,"manual", "test",
 	        		classAttributeName, positiveLabel, pathToChangeIDSha1Pair,path + "biChangesBICERManuallyFiltered.txt",pathToChangePatchSize,patchSizeCutoffForDeletedLines);
-    	}
+    	
+    	}*/
     }
     
     private void generateArffs(String path,String[] startDates,String[] endDates,String[] testStartDates,String lastDateForFixCollection,String type, String dataType,
@@ -236,14 +238,18 @@ public class LabelerTest {
     			lastDateForFixCollection = testStartDates[i] + " 00:00:00 -0000";
     		}
     		
+    		String newPathPostfix = "";
+    		if(patchSizeCutoffForDeletedLines>0)
+    			newPathPostfix = "_" + patchSizeCutoffForDeletedLines;
+    			
     		if(type.equals("manual"))	
-    			pathToNewArff = path + "arffsManuallyFilteredWOTestCases_" + patchSizeCutoffForDeletedLines + "/" + i + "/" + dataType+ ".arff";
+    			pathToNewArff = path + "arffsManuallyFilteredWOTestCases" + newPathPostfix + "/" + i + "/" + dataType+ ".arff";
     		else if(type.equals("filtered"))
-    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases_" + patchSizeCutoffForDeletedLines + "/" + i + "/" + dataType+ ".arff";
+    			pathToNewArff = path + "arffsNoiseFilteredWOTestCases" + newPathPostfix + "/" + i + "/" + dataType+ ".arff";
     		else if(type.equals("wTestCases"))
-    			pathToNewArff = path + "arffsCleanedWTestCases_" + patchSizeCutoffForDeletedLines + "/" + i + "/" + dataType+ ".arff";
+    			pathToNewArff = path + "arffsCleanedWTestCases" + newPathPostfix + "/" + i + "/" + dataType+ ".arff";
     		else
-    			pathToNewArff = path + "arffsCleanedWOTestCases_" + patchSizeCutoffForDeletedLines + "/" + i + "/" + dataType+ ".arff";
+    			pathToNewArff = path + "arffsCleanedWOTestCases" + newPathPostfix + "/" + i + "/" + dataType+ ".arff";
     		
     		System.out.println("\n\nData index: " + i);
     		

@@ -59,7 +59,7 @@ public class Labeler {
 			instance.setValue(instances.classAttribute(), newLabel);
 			
 			// ignore bigger patches based on patchSizeCutoffForDeletedLines
-			if(changesWithPatchSize.get(key)!= null && !(changesWithPatchSize.get(key).getNumDeletedLines()<=patchSizeCutoffForDeletedLines))
+			if(patchSizeCutoffForDeletedLines>0 && changesWithPatchSize.get(key)!= null && !(changesWithPatchSize.get(key).getNumDeletedLines()<=patchSizeCutoffForDeletedLines))
 				instancesToBeDeleted += (i+1) + ",";
 		}
 
@@ -131,7 +131,7 @@ public class Labeler {
 					String path = biChange.getPath().toLowerCase();
 					
 					// if the number of deleted lines in a fix commit is > patchSizeCutoffForDeletedLines, ignore
-					if(!(changesWithPatchSize.get(fixSha1+path).getNumDeletedLines()<=patchSizeCutoffForDeletedLines)) continue;
+					if(patchSizeCutoffForDeletedLines > 0 && !(changesWithPatchSize.get(fixSha1+path).getNumDeletedLines()<=patchSizeCutoffForDeletedLines)) continue;
 					
 					if(fixDate.compareTo(lDateForFixCollection)>=0) // if fixDate >= lastDateForFixCollection (no inclusive for labeling), continue
 						continue;
