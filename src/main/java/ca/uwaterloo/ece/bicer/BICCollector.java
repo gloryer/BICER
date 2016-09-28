@@ -2,6 +2,8 @@ package ca.uwaterloo.ece.bicer;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.*;
+import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -140,6 +142,13 @@ public class BICCollector {
 								String prevFileSource=Utils.removeComments(Utils.fetchBlob(repo, id +  "~1", oldPath));
 								String fileSource=Utils.removeComments(Utils.fetchBlob(repo, id, newPath));
 								
+								/*FileWriter fw = new FileWriter("2007.txt");
+								PrintWriter pw = new PrintWriter(fw);
+								pw.println(prevFileSource);
+								pw.close();*/
+								System.out.println(prevFileSource + "\n"+ "-|");
+								//System.out.println(fileSource + "\n" +"-|");
+								
 								EditList editList = Utils.getEditListFromDiff(prevFileSource, fileSource);
 
 								// get line indices that are related to BI lines.
@@ -176,7 +185,7 @@ public class BICCollector {
 				}
 			}
 			Collections.sort(lstBIChanges);
-			System.out.println("BISha1\toldPath\tPath\tFixSha1\tBIDate\tFixDate\tLineNumInBI\tLineNumInPreFix\tisAddedLine\tLine");
+			/*System.out.println("BISha1\toldPath\tPath\tFixSha1\tBIDate\tFixDate\tLineNumInBI\tLineNumInPreFix\tisAddedLine\tLine");
 			for(BIChange biChange:lstBIChanges){
 				System.out.println(biChange.getBISha1() + "\t" +
 										biChange.getBIPath() + "\t" +
@@ -187,9 +196,8 @@ public class BICCollector {
 										biChange.getLineNum() + "\t" +
 										biChange.getLineNumInPrevFixRev() + "\t" +
 										biChange.getIsAddedLine() + "\t" +
-										biChange.getLine()
-									);
-			}
+										biChange.getLine());*/
+	//		}
 		}
 	}
 
