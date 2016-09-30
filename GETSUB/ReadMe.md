@@ -65,7 +65,8 @@ For example:<br />
     	};
 ```
 ##stage 1:Collecting source file code before change and after change
-Note: You can only operate the following instructions just at before change stage or after change stage.<br ?>
+Note:<br />
+You can only operate the following instructions just at before change stage or after change stage.<br />
 It can not generate all the souce code files and their vector information at before change stage and after change stage at the same time.
 
 - Clone Java project BICER (https://github.com/lifove/BICER.git)
